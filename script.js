@@ -155,6 +155,23 @@ class Metronome {
 
         // Initialize Dots
         this.updateBeatDots();
+
+        // Detail Settings Toggle
+        const detailToggle = el.querySelector('.detail-toggle');
+        const detailSettings = el.querySelector('.detail-settings');
+
+        if (detailToggle && detailSettings) {
+            detailToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log('Detail toggle clicked');
+                detailSettings.classList.toggle('open');
+                const isOpen = detailSettings.classList.contains('open');
+                detailToggle.textContent = isOpen ? '詳細設定 ▲' : '詳細設定 ▼';
+            });
+        } else {
+            console.error('Detail toggle elements not found');
+        }
     }
 
     updateBeatDots() {
@@ -188,25 +205,7 @@ class Metronome {
 
 // Scheduler Logic
 function scheduler() {
-    while (nextNoteTime < audioContext.currentTime + scheduleAheadTime) {
-        metronomes.forEach(m => scheduleMetronomeNote(m, nextNoteTime));
-        // We advance time for all metronomes together, effectively locking them to the same scheduler tick?
-        // Actually, each metronome has its own tempo. But we need a global lookdown.
-        // Wait, if tempos differ, we can't share one global "beat index" or "nextNoteTime" increment effectively
-        // unless they are phase-locked or we schedule purely by absolute time.
-        // For independent tempos, each metronome needs its own `nextNoteTime`.
 
-        // REVISION: The global loop should just drive the clock. 
-        // But `scheduler` creates the loop. We need to iterate metronomes and let THEM schedule if their time is up.
-        // However, standard pattern is `while (nextNoteTime < ...)`
-        // If they have different tempos, they have different `nextNoteTime`.
-
-        // Correct approach for Multi-Tempo:
-        // Checking each metronome inside the loop is tricky if they drift apart significantly in `nextNoteTime`.
-        // Better: Loop through metronomes, and for EACH metronome, loop while IT's time is up.
-
-        break; // Breaking out to fix logic in the loop below
-    }
     // Correct loop implementation inside scheduler function:
     metronomes.forEach(m => {
         // Initialize nextNoteTime for new metronomes if needed, or track it on the instance
@@ -287,19 +286,27 @@ function advanceMetronomeNote(metronome) {
 }
 
 // Global Controls
-function togglePlay() {
+async function togglePlay() {
     if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Ensure context is running
+    if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+    }
 
     isPlaying = !isPlaying;
 
     if (isPlaying) {
-        if (audioContext.state === 'suspended') audioContext.resume();
-        // Reset timing for all
+        // Reset timing for all with a small safe buffer
+        // Adding 0.05s delay allows the audio engine to stabilize
         const now = audioContext.currentTime;
+        const startDelay = 0.05;
+
         metronomes.forEach(m => {
             m.currentBeat = 0;
-            m.nextNoteTime = now + 0.1;
+            m.nextNoteTime = now + startDelay;
         });
+
         playBtn.classList.add('playing');
         playBtn.querySelector('.play-icon').textContent = '⏹';
         playBtn.querySelector('.btn-text').textContent = 'ストップ';

@@ -890,3 +890,48 @@ header h1 {
         justify-content: center;
     }
 }
+
+/* Detail Settings Toggle */
+.detail-toggle {
+    width: 100%;
+    padding: 12px;
+    background: var(--bg-glass);
+    border: none;
+    border-radius: 12px;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 24px;
+}
+
+.detail-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+}
+
+.detail-settings {
+    display: none;
+    margin-top: 10px;
+}
+
+.detail-settings.open {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
