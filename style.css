@@ -128,7 +128,7 @@ header h1 {
     margin-bottom: 24px;
 }
 
-#tempo-input {
+.tempo-input {
     font-size: 5rem;
     font-weight: 700;
     color: var(--text-primary);
@@ -143,8 +143,8 @@ header h1 {
     -moz-appearance: textfield;
 }
 
-#tempo-input::-webkit-outer-spin-button,
-#tempo-input::-webkit-inner-spin-button {
+.tempo-input::-webkit-outer-spin-button,
+.tempo-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
 }
@@ -190,7 +190,7 @@ header h1 {
     transform: scale(0.95);
 }
 
-#tempo-slider {
+.tempo-slider {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
@@ -200,7 +200,7 @@ header h1 {
     outline: none;
 }
 
-#tempo-slider::-webkit-slider-thumb {
+.tempo-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -212,7 +212,7 @@ header h1 {
     transition: transform 0.2s ease;
 }
 
-#tempo-slider::-webkit-slider-thumb:hover {
+.tempo-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
 }
 
@@ -243,7 +243,7 @@ header h1 {
     color: var(--text-secondary);
 }
 
-#volume-display {
+.volume-display {
     font-size: 1rem;
     font-weight: 600;
     color: var(--accent);
@@ -304,7 +304,7 @@ header h1 {
 
 
 
-#volume-slider {
+.volume-slider {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
@@ -314,7 +314,7 @@ header h1 {
     outline: none;
 }
 
-#volume-slider::-webkit-slider-thumb {
+.volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -326,20 +326,20 @@ header h1 {
     transition: transform 0.2s ease;
 }
 
-#volume-slider::-webkit-slider-thumb:hover {
+.volume-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
 }
 
 /* Offbeat Volume Slider */
-.offbeat-volume #offbeat-volume-slider {
+.offbeat-volume .offbeat-volume-slider {
     background: linear-gradient(90deg, #f39c12, #e67e22);
 }
 
-.offbeat-volume #offbeat-volume-display {
+.offbeat-volume .offbeat-volume-display {
     color: #f39c12;
 }
 
-#offbeat-volume-slider {
+.offbeat-volume-slider {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
@@ -349,7 +349,7 @@ header h1 {
     outline: none;
 }
 
-#offbeat-volume-slider::-webkit-slider-thumb {
+.offbeat-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -361,7 +361,7 @@ header h1 {
     transition: transform 0.2s ease;
 }
 
-#offbeat-volume-slider::-webkit-slider-thumb:hover {
+.offbeat-volume-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
 }
 
