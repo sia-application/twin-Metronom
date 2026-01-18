@@ -58,14 +58,25 @@ header h1 {
     margin-bottom: 24px;
 }
 
-#tempo-value {
+#tempo-input {
     font-size: 5rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #fff, var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
     line-height: 1;
+    width: 100%;
+    text-align: center;
+    outline: none;
+    caret-color: var(--accent);
+    font-family: 'Outfit', sans-serif;
+    -moz-appearance: textfield;
+}
+
+#tempo-input::-webkit-outer-spin-button,
+#tempo-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .tempo-label {

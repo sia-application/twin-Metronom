@@ -21,7 +21,7 @@ let lookahead = 25;
 // DOM Elements
 const playBtn = document.getElementById('play-btn');
 const tempoSlider = document.getElementById('tempo-slider');
-const tempoValue = document.getElementById('tempo-value');
+const tempoInput = document.getElementById('tempo-input');
 const tempoDown = document.getElementById('tempo-down');
 const tempoUp = document.getElementById('tempo-up');
 const rhythmBtns = document.querySelectorAll('.rhythm-btn');
@@ -82,6 +82,15 @@ function setupEventListeners() {
 
     tempoUp.addEventListener('click', () => {
         tempo = Math.min(999, tempo + 1);
+        tempoSlider.value = tempo;
+        updateTempoDisplay();
+    });
+
+    tempoInput.addEventListener('change', (e) => {
+        let val = parseInt(e.target.value);
+        if (isNaN(val)) val = 120;
+        val = Math.max(5, Math.min(999, val));
+        tempo = val;
         tempoSlider.value = tempo;
         updateTempoDisplay();
     });
@@ -177,7 +186,7 @@ function setupEventListeners() {
 
 // Update Tempo Display
 function updateTempoDisplay() {
-    tempoValue.textContent = tempo;
+    tempoInput.value = tempo;
 }
 
 // Update Beat Dots
