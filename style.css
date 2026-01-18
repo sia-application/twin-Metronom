@@ -170,6 +170,48 @@ header h1 {
     opacity: 0.7;
 }
 
+.mute-btn {
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.mute-btn:hover {
+    background: var(--bg-glass);
+    opacity: 1;
+}
+
+.mute-btn.muted {
+    opacity: 1;
+    color: #e74c3c;
+}
+
+.volume-up-btn {
+    font-size: 1.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.volume-up-btn:hover {
+    background: var(--bg-glass);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.volume-up-btn:active {
+    transform: scale(0.95);
+}
+
 #volume-slider {
     flex: 1;
     height: 8px;
@@ -381,6 +423,82 @@ header h1 {
     left: 26px;
     background: linear-gradient(135deg, var(--accent), #e84393);
     box-shadow: 0 2px 8px rgba(253, 121, 168, 0.4);
+}
+
+/* Accent Toggle */
+.accent-section {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: center;
+}
+
+.accent-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    border: 2px solid var(--bg-glass);
+    border-radius: 50px;
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.accent-toggle:hover {
+    border-color: var(--secondary);
+    background: rgba(162, 155, 254, 0.1);
+}
+
+.accent-toggle.active {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.15);
+}
+
+.accent-icon {
+    font-size: 1.1rem;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.accent-toggle.active .accent-icon {
+    opacity: 1;
+}
+
+.accent-label {
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.accent-toggle.active .accent-label {
+    color: #e74c3c;
+}
+
+.accent-switch {
+    width: 36px;
+    height: 20px;
+    background: var(--bg-dark);
+    border-radius: 10px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.accent-slider {
+    width: 16px;
+    height: 16px;
+    background: var(--text-secondary);
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: all 0.3s ease;
+}
+
+.accent-toggle.active .accent-slider {
+    left: 18px;
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    box-shadow: 0 2px 8px rgba(231, 76, 60, 0.4);
 }
 
 /* Subdivision Sound Toggle */

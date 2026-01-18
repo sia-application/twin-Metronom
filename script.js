@@ -5,9 +5,12 @@ let tempo = 120;
 let currentPattern = 'quarter';
 let currentBeat = 0;
 let isOffbeat = false;
+let accentEnabled = true;
 let subdivisionSound = false;
+let offbeatMuted = false;
+let mainMuted = false;
 let volume = 1.0;
-let offbeatVolume = 1.0;
+let offbeatVolume = 0.1;
 let schedulerTimer = null;
 let nextNoteTime = 0;
 let scheduleAheadTime = 0.1;
@@ -22,11 +25,15 @@ const tempoUp = document.getElementById('tempo-up');
 const rhythmBtns = document.querySelectorAll('.rhythm-btn');
 const beatDots = document.getElementById('beat-dots');
 const offbeatToggle = document.getElementById('offbeat-toggle');
-const subdivisionToggle = document.getElementById('subdivision-toggle');
+const accentToggle = document.getElementById('accent-toggle');
+const offbeatMuteBtn = document.getElementById('offbeat-mute-btn');
+const mainMuteBtn = document.getElementById('main-mute-btn');
 const volumeSlider = document.getElementById('volume-slider');
 const volumeDisplay = document.getElementById('volume-display');
 const offbeatVolumeSlider = document.getElementById('offbeat-volume-slider');
 const offbeatVolumeDisplay = document.getElementById('offbeat-volume-display');
+const mainVolumeUpBtn = document.getElementById('main-volume-up');
+const offbeatVolumeUpBtn = document.getElementById('offbeat-volume-up');
 
 // Pattern Definitions
 const patterns = {
@@ -90,19 +97,61 @@ function setupEventListeners() {
         offbeatToggle.classList.toggle('offbeat', isOffbeat);
     });
 
-    subdivisionToggle.addEventListener('click', () => {
-        subdivisionSound = !subdivisionSound;
-        subdivisionToggle.classList.toggle('active', subdivisionSound);
+    accentToggle.addEventListener('click', () => {
+        accentEnabled = !accentEnabled;
+        accentToggle.classList.toggle('active', accentEnabled);
+    });
+
+    // Volume down buttons
+    offbeatMuteBtn.addEventListener('click', () => {
+        const newValue = Math.max(0, parseInt(offbeatVolumeSlider.value) - 10);
+        offbeatVolumeSlider.value = newValue;
+        offbeatVolume = newValue / 100;
+        offbeatVolumeDisplay.textContent = newValue + '%';
+        offbeatMuteBtn.textContent = newValue === 0 ? '🔇' : '🔈';
+        offbeatMuteBtn.classList.toggle('muted', newValue === 0);
+    });
+
+    mainMuteBtn.addEventListener('click', () => {
+        const newValue = Math.max(0, parseInt(volumeSlider.value) - 100);
+        volumeSlider.value = newValue;
+        volume = newValue / 100;
+        volumeDisplay.textContent = newValue + '%';
+        mainMuteBtn.textContent = newValue === 0 ? '🔇' : '🔈';
+        mainMuteBtn.classList.toggle('muted', newValue === 0);
     });
 
     volumeSlider.addEventListener('input', (e) => {
         volume = parseInt(e.target.value) / 100;
         volumeDisplay.textContent = e.target.value + '%';
+        mainMuteBtn.textContent = parseInt(e.target.value) === 0 ? '🔇' : '🔈';
+        mainMuteBtn.classList.toggle('muted', parseInt(e.target.value) === 0);
     });
 
     offbeatVolumeSlider.addEventListener('input', (e) => {
         offbeatVolume = parseInt(e.target.value) / 100;
         offbeatVolumeDisplay.textContent = e.target.value + '%';
+        offbeatMuteBtn.textContent = parseInt(e.target.value) === 0 ? '🔇' : '🔈';
+        offbeatMuteBtn.classList.toggle('muted', parseInt(e.target.value) === 0);
+    });
+
+    // Volume up buttons
+    mainVolumeUpBtn.addEventListener('click', () => {
+        const newValue = Math.min(500, parseInt(volumeSlider.value) + 100);
+        volumeSlider.value = newValue;
+        volume = newValue / 100;
+        volumeDisplay.textContent = newValue + '%';
+        mainMuteBtn.textContent = newValue === 0 ? '🔇' : '🔈';
+        mainMuteBtn.classList.toggle('muted', newValue === 0);
+    });
+
+    offbeatVolumeUpBtn.addEventListener('click', () => {
+        const newValue = Math.min(500, parseInt(offbeatVolumeSlider.value) + 10);
+        offbeatVolumeSlider.value = newValue;
+        offbeatVolume = newValue / 100;
+        offbeatVolumeDisplay.textContent = newValue + '%';
+        offbeatMuteBtn.textContent = newValue === 0 ? '🔇' : '🔈';
+        offbeatMuteBtn.classList.toggle('muted', newValue === 0);
     });
 }
 
@@ -236,26 +285,29 @@ function scheduleNote(beatNumber, time) {
     // Use square wave for louder, punchier sound
     osc.type = 'square';
 
-    // First beat is higher pitch, all beats same volume
-    if (beatNumber === 0) {
-        osc.frequency.value = 1000;
+    // First beat is higher pitch if accent enabled
+    if (beatNumber === 0 && accentEnabled) {
+        osc.frequency.value = 1000; // Higher pitch for accent
     } else {
         osc.frequency.value = 800;
     }
 
-    // Set initial gain with volume control
-    gainNode.gain.setValueAtTime(volume, mainClickTime);
+    // Play main click - if volume > 0
+    if (volume > 0) {
+        // Set initial gain with volume control
+        gainNode.gain.setValueAtTime(volume, mainClickTime);
 
-    osc.connect(gainNode);
-    gainNode.connect(audioContext.destination);
+        osc.connect(gainNode);
+        gainNode.connect(audioContext.destination);
 
-    // Longer sound for more presence
-    osc.start(mainClickTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, mainClickTime + 0.1);
-    osc.stop(mainClickTime + 0.1);
+        // Longer sound for more presence
+        osc.start(mainClickTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, mainClickTime + 0.1);
+        osc.stop(mainClickTime + 0.1);
+    }
 
-    // Play subdivision sound (offbeat click)
-    if (subdivisionSound) {
+    // Play subdivision sound (offbeat click) - if volume > 0
+    if (offbeatVolume > 0) {
         const subOsc = audioContext.createOscillator();
         const subGain = audioContext.createGain();
 

@@ -38,9 +38,9 @@
                     <span id="volume-display">100%</span>
                 </div>
                 <div class="volume-control">
-                    <span class="volume-icon">🔈</span>
+                    <button class="mute-btn" id="main-mute-btn" title="ミュート">🔈</button>
                     <input type="range" id="volume-slider" min="0" max="500" value="100">
-                    <span class="volume-icon">🔊</span>
+                    <button class="volume-up-btn" id="main-volume-up" title="+100%">🔊</button>
                 </div>
             </div>
 
@@ -48,12 +48,12 @@
             <div class="volume-section offbeat-volume">
                 <div class="volume-label">
                     <span>♪ オフビート音量</span>
-                    <span id="offbeat-volume-display">100%</span>
+                    <span id="offbeat-volume-display">10%</span>
                 </div>
                 <div class="volume-control">
-                    <span class="volume-icon">🔈</span>
-                    <input type="range" id="offbeat-volume-slider" min="0" max="500" value="100">
-                    <span class="volume-icon">🔊</span>
+                    <button class="mute-btn" id="offbeat-mute-btn" title="ミュート">🔈</button>
+                    <input type="range" id="offbeat-volume-slider" min="0" max="500" value="10">
+                    <button class="volume-up-btn" id="offbeat-volume-up" title="+10%">🔊</button>
                 </div>
             </div>
 
@@ -100,13 +100,13 @@
                 </button>
             </div>
 
-            <!-- Subdivision Sound Toggle -->
-            <div class="subdivision-section">
-                <button class="subdivision-toggle" id="subdivision-toggle">
-                    <div class="subdivision-icon">♪</div>
-                    <span class="subdivision-label">オフビート音</span>
-                    <div class="subdivision-switch">
-                        <div class="subdivision-slider"></div>
+            <!-- Accent Toggle -->
+            <div class="accent-section">
+                <button class="accent-toggle active" id="accent-toggle">
+                    <span class="accent-icon">🥁</span>
+                    <span class="accent-label">1拍目アクセント</span>
+                    <div class="accent-switch">
+                        <div class="accent-slider"></div>
                     </div>
                 </button>
             </div>
