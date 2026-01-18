@@ -75,13 +75,13 @@ function setupEventListeners() {
     });
 
     tempoDown.addEventListener('click', () => {
-        tempo = Math.max(40, tempo - 5);
+        tempo = Math.max(5, tempo - 1);
         tempoSlider.value = tempo;
         updateTempoDisplay();
     });
 
     tempoUp.addEventListener('click', () => {
-        tempo = Math.min(240, tempo + 5);
+        tempo = Math.min(999, tempo + 1);
         tempoSlider.value = tempo;
         updateTempoDisplay();
     });
