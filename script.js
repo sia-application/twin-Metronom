@@ -3,6 +3,8 @@ let audioContext = null;
 let isPlaying = false;
 let tempo = 120;
 let currentPattern = 'quarter';
+let clickMultiplier = 1;
+let offbeatMultiplier = 1;
 let currentBeat = 0;
 let isOffbeat = false;
 let accentEnabled = true;
@@ -34,6 +36,8 @@ const offbeatVolumeSlider = document.getElementById('offbeat-volume-slider');
 const offbeatVolumeDisplay = document.getElementById('offbeat-volume-display');
 const mainVolumeUpBtn = document.getElementById('main-volume-up');
 const offbeatVolumeUpBtn = document.getElementById('offbeat-volume-up');
+const multiplierBtns = document.querySelectorAll('.multiplier-btn');
+const offbeatMultBtns = document.querySelectorAll('.offbeat-mult-btn');
 
 // Pattern Definitions
 const patterns = {
@@ -89,6 +93,22 @@ function setupEventListeners() {
             currentPattern = btn.dataset.pattern;
             currentBeat = 0;
             updateBeatDots();
+        });
+    });
+
+    multiplierBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            multiplierBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            clickMultiplier = parseInt(btn.dataset.multiplier);
+        });
+    });
+
+    offbeatMultBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            offbeatMultBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            offbeatMultiplier = parseInt(btn.dataset.multiplier);
         });
     });
 
@@ -278,52 +298,83 @@ function scheduleNote(beatNumber, time) {
         subdivisionClickTime = time + halfBeatDuration;
     }
 
-    // Play main click
-    const osc = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-
-    // Use square wave for louder, punchier sound
-    osc.type = 'square';
-
-    // First beat is higher pitch if accent enabled
-    if (beatNumber === 0 && accentEnabled) {
-        osc.frequency.value = 1000; // Higher pitch for accent
-    } else {
-        osc.frequency.value = 800;
-    }
-
-    // Play main click - if volume > 0
+    // Play main clicks based on multiplier
     if (volume > 0) {
-        // Set initial gain with volume control
-        gainNode.gain.setValueAtTime(volume, mainClickTime);
+        // Calculate the interval between multiplied clicks
+        let beatDuration;
+        if (currentPattern === 'quarter') {
+            beatDuration = 60.0 / tempo;
+        } else {
+            beatDuration = 60.0 / tempo / 3;
+        }
+        const clickInterval = beatDuration / clickMultiplier;
 
-        osc.connect(gainNode);
-        gainNode.connect(audioContext.destination);
+        for (let i = 0; i < clickMultiplier; i++) {
+            const clickTime = mainClickTime + (i * clickInterval);
 
-        // Longer sound for more presence
-        osc.start(mainClickTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, mainClickTime + 0.1);
-        osc.stop(mainClickTime + 0.1);
+            const osc = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            // Use square wave for louder, punchier sound
+            osc.type = 'square';
+
+            // First click of first beat is higher pitch if accent enabled
+            if (beatNumber === 0 && i === 0 && accentEnabled) {
+                osc.frequency.value = 1000; // Higher pitch for accent
+            } else {
+                osc.frequency.value = 800;
+            }
+
+            // Set initial gain with volume control
+            gainNode.gain.setValueAtTime(volume, clickTime);
+
+            osc.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // Longer sound for more presence
+            osc.start(clickTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, clickTime + 0.05);
+            osc.stop(clickTime + 0.05);
+        }
     }
 
     // Play subdivision sound (offbeat click) - if volume > 0
     if (offbeatVolume > 0) {
-        const subOsc = audioContext.createOscillator();
-        const subGain = audioContext.createGain();
+        // Use the same interval calculation as main click
+        let beatDuration;
+        if (currentPattern === 'quarter') {
+            beatDuration = 60.0 / tempo;
+        } else {
+            beatDuration = 60.0 / tempo / 3;
+        }
+        // Calculate interval based on main click multiplier
+        const mainClickInterval = beatDuration / clickMultiplier;
+        // Offbeat interval based on offbeat multiplier
+        const offbeatClickInterval = beatDuration / offbeatMultiplier;
+        // Offset by half of main click interval to always play between main clicks
+        const offbeatOffset = mainClickInterval / 2;
 
-        // Use square wave for louder sound
-        subOsc.type = 'square';
-        subOsc.frequency.value = 600;
+        for (let i = 0; i < offbeatMultiplier; i++) {
+            // Start from mainClickTime (not subdivisionClickTime) and add offset
+            const clickTime = mainClickTime + (i * offbeatClickInterval) + offbeatOffset;
 
-        // Set initial gain with offbeat volume control
-        subGain.gain.setValueAtTime(offbeatVolume, subdivisionClickTime);
+            const subOsc = audioContext.createOscillator();
+            const subGain = audioContext.createGain();
 
-        subOsc.connect(subGain);
-        subGain.connect(audioContext.destination);
+            // Use square wave for louder sound
+            subOsc.type = 'square';
+            subOsc.frequency.value = 600;
 
-        subOsc.start(subdivisionClickTime);
-        subGain.gain.exponentialRampToValueAtTime(0.001, subdivisionClickTime + 0.1);
-        subOsc.stop(subdivisionClickTime + 0.1);
+            // Set initial gain with offbeat volume control
+            subGain.gain.setValueAtTime(offbeatVolume, clickTime);
+
+            subOsc.connect(subGain);
+            subGain.connect(audioContext.destination);
+
+            subOsc.start(clickTime);
+            subGain.gain.exponentialRampToValueAtTime(0.001, clickTime + 0.05);
+            subOsc.stop(clickTime + 0.05);
+        }
     }
 }
 

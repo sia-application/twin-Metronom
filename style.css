@@ -212,6 +212,48 @@ header h1 {
     transform: scale(0.95);
 }
 
+/* Offbeat Multiplier Buttons */
+.offbeat-multiplier {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.offbeat-mult-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.offbeat-multiplier-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.offbeat-mult-btn {
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--bg-glass);
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.offbeat-mult-btn:hover {
+    border-color: #f39c12;
+    background: rgba(243, 156, 18, 0.1);
+}
+
+.offbeat-mult-btn.active {
+    border-color: #f39c12;
+    background: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
 #volume-slider {
     flex: 1;
     height: 8px;
@@ -350,6 +392,50 @@ header h1 {
     font-size: 0.75rem;
     color: var(--text-secondary);
     white-space: nowrap;
+}
+
+/* Click Multiplier Selection */
+.multiplier-section {
+    margin-bottom: 24px;
+}
+
+.multiplier-section h2 {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.multiplier-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
+
+.multiplier-btn {
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: 2px solid var(--bg-glass);
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.multiplier-btn:hover {
+    border-color: var(--secondary);
+    background: rgba(162, 155, 254, 0.1);
+}
+
+.multiplier-btn.active {
+    border-color: #00d2d3;
+    background: rgba(0, 210, 211, 0.2);
+    color: #00d2d3;
+    box-shadow: 0 0 15px rgba(0, 210, 211, 0.3);
 }
 
 /* Offbeat Toggle */
