@@ -4,6 +4,7 @@ let isPlaying = false;
 let tempo = 120;
 let currentPattern = 'quarter';
 let currentBeat = 0;
+let isOffbeat = false;
 let schedulerTimer = null;
 let nextNoteTime = 0;
 let scheduleAheadTime = 0.1;
@@ -17,6 +18,7 @@ const tempoDown = document.getElementById('tempo-down');
 const tempoUp = document.getElementById('tempo-up');
 const rhythmBtns = document.querySelectorAll('.rhythm-btn');
 const beatDots = document.getElementById('beat-dots');
+const offbeatToggle = document.getElementById('offbeat-toggle');
 
 // Pattern Definitions
 const patterns = {
@@ -47,24 +49,24 @@ function init() {
 // Setup Event Listeners
 function setupEventListeners() {
     playBtn.addEventListener('click', togglePlay);
-    
+
     tempoSlider.addEventListener('input', (e) => {
         tempo = parseInt(e.target.value);
         updateTempoDisplay();
     });
-    
+
     tempoDown.addEventListener('click', () => {
         tempo = Math.max(40, tempo - 5);
         tempoSlider.value = tempo;
         updateTempoDisplay();
     });
-    
+
     tempoUp.addEventListener('click', () => {
         tempo = Math.min(240, tempo + 5);
         tempoSlider.value = tempo;
         updateTempoDisplay();
     });
-    
+
     rhythmBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             rhythmBtns.forEach(b => b.classList.remove('active'));
@@ -73,6 +75,11 @@ function setupEventListeners() {
             currentBeat = 0;
             updateBeatDots();
         });
+    });
+
+    offbeatToggle.addEventListener('click', () => {
+        isOffbeat = !isOffbeat;
+        offbeatToggle.classList.toggle('offbeat', isOffbeat);
     });
 }
 
@@ -85,7 +92,7 @@ function updateTempoDisplay() {
 function updateBeatDots() {
     const pattern = patterns[currentPattern];
     beatDots.innerHTML = '';
-    
+
     for (let i = 0; i < pattern.beats; i++) {
         const dot = document.createElement('span');
         dot.className = 'dot';
@@ -101,7 +108,7 @@ function togglePlay() {
     if (!audioContext) {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
     }
-    
+
     if (isPlaying) {
         stop();
     } else {
@@ -114,11 +121,11 @@ function start() {
     isPlaying = true;
     currentBeat = 0;
     nextNoteTime = audioContext.currentTime;
-    
+
     playBtn.classList.add('playing');
     playBtn.querySelector('.play-icon').textContent = '⏹';
     playBtn.querySelector('.btn-text').textContent = 'ストップ';
-    
+
     scheduler();
 }
 
@@ -126,11 +133,11 @@ function start() {
 function stop() {
     isPlaying = false;
     clearTimeout(schedulerTimer);
-    
+
     playBtn.classList.remove('playing');
     playBtn.querySelector('.play-icon').textContent = '▶';
     playBtn.querySelector('.btn-text').textContent = 'スタート';
-    
+
     // Clear active dots
     document.querySelectorAll('.beat-dots .dot').forEach(dot => {
         dot.classList.remove('active', 'first');
@@ -149,11 +156,21 @@ function scheduler() {
 // Schedule Note
 function scheduleNote(beatNumber, time) {
     const pattern = patterns[currentPattern];
-    
+
+    // Calculate offbeat delay
+    let offbeatDelay = 0;
+    if (isOffbeat) {
+        if (currentPattern === 'quarter') {
+            offbeatDelay = (60.0 / tempo) / 2; // Half a beat
+        } else {
+            offbeatDelay = (60.0 / tempo / 3) / 2; // Half a triplet note
+        }
+    }
+
     // Visual feedback
     setTimeout(() => {
         if (!isPlaying) return;
-        
+
         const dots = document.querySelectorAll('.beat-dots .dot');
         dots.forEach((dot, i) => {
             dot.classList.remove('active', 'first');
@@ -165,16 +182,19 @@ function scheduleNote(beatNumber, time) {
             }
         });
     }, (time - audioContext.currentTime) * 1000);
-    
+
     // Check if this beat should sound
     if (pattern.notes[beatNumber] === 0) {
         return; // Silent beat
     }
-    
+
+    // Actual sound time (with offbeat delay)
+    const soundTime = time + offbeatDelay;
+
     // Create oscillator for click sound
     const osc = audioContext.createOscillator();
     const gainNode = audioContext.createGain();
-    
+
     // First beat is higher pitch
     if (beatNumber === 0) {
         osc.frequency.value = 1000;
@@ -183,20 +203,20 @@ function scheduleNote(beatNumber, time) {
         osc.frequency.value = 800;
         gainNode.gain.value = 0.3;
     }
-    
+
     osc.connect(gainNode);
     gainNode.connect(audioContext.destination);
-    
+
     // Short click sound
-    osc.start(time);
-    gainNode.gain.exponentialRampToValueAtTime(0.001, time + 0.05);
-    osc.stop(time + 0.05);
+    osc.start(soundTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, soundTime + 0.05);
+    osc.stop(soundTime + 0.05);
 }
 
 // Next Note
 function nextNote() {
     const pattern = patterns[currentPattern];
-    
+
     // Calculate note duration based on pattern
     let noteDuration;
     if (currentPattern === 'quarter') {
@@ -206,7 +226,7 @@ function nextNote() {
         // Triplets: 3 notes per beat, so each note is 1/3 of a beat
         noteDuration = 60.0 / tempo / 3;
     }
-    
+
     nextNoteTime += noteDuration;
     currentBeat = (currentBeat + 1) % pattern.beats;
 }
