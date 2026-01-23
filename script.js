@@ -39,6 +39,15 @@ function unlockAudio() {
         console.warn('Silent HTML5 audio play failed', e);
     });
 
+    // 3. Play a silent HTML5 Audio element to force iOS Audio Session to "Playback"
+    // This allows sound even when the hardware mute switch is on.
+    const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAGZGF0YQQAAAAAAA==");
+    silentAudio.play().then(() => {
+        console.log('Silent HTML5 audio played, forcing Playback session');
+    }).catch(e => {
+        console.warn('Silent HTML5 audio play failed', e);
+    });
+
     audioUnlocked = true;
 
     // Remove listeners once unlocked
