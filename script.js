@@ -9,6 +9,11 @@ let lookahead = 25;
 let audioUnlocked = false;
 
 // Unlock AudioContext for iOS
+// Unlock AudioContext for iOS
+// Global silent audio for background playback
+const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAGZGF0YQQAAAAAAA==");
+silentAudio.loop = true;
+
 function unlockAudio() {
     if (audioUnlocked) return;
 
@@ -30,11 +35,17 @@ function unlockAudio() {
     source.connect(audioContext.destination);
     source.start(0);
 
-    // 3. Play a silent HTML5 Audio element to force iOS Audio Session to "Playback"
-    // This allows sound even when the hardware mute switch is on.
-    const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAGZGF0YQQAAAAAAA==");
+    // 3. Play silent HTML5 Audio
+    // Just triggering play() unlocks the element for later programmatic control
     silentAudio.play().then(() => {
-        console.log('Silent HTML5 audio played, forcing Playback session');
+        console.log('Silent HTML5 audio unpaused/unlocked');
+        // Immediately pause it if we are not actually playing yet,
+        // unless we want to keep it running to keep the session active?
+        // Actually, for "unlocking", we usually just need a user interaction.
+        // We will manage actual playback state in togglePlay.
+        if (!isPlaying) {
+            silentAudio.pause();
+        }
     }).catch(e => {
         console.warn('Silent HTML5 audio play failed', e);
     });
@@ -429,6 +440,30 @@ function advanceMetronomeNote(metronome) {
     metronome.currentBeat = (metronome.currentBeat + 1) % pattern.beats;
 }
 
+// Media Session API Setup
+function setupMediaSession() {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: 'MALTINOME',
+            artist: 'SiA',
+            album: 'Metronome App',
+            artwork: [
+                { src: 'icon.png', sizes: '512x512', type: 'image/png' }
+            ]
+        });
+
+        navigator.mediaSession.setActionHandler('play', () => {
+            if (!isPlaying) togglePlay();
+        });
+        navigator.mediaSession.setActionHandler('pause', () => {
+            if (isPlaying) togglePlay();
+        });
+        navigator.mediaSession.setActionHandler('stop', () => {
+            if (isPlaying) togglePlay();
+        });
+    }
+}
+
 // Global Controls
 async function togglePlay() {
     if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -446,6 +481,14 @@ async function togglePlay() {
         metronomes.forEach(m => {
             if (m.isPlaying) m.toggle();
         });
+
+        // Background Playback: Pause silent audio
+        silentAudio.pause();
+        // Update Media Session state
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'paused';
+        }
+
     } else {
         // START ALL
         const now = audioContext.currentTime;
@@ -465,6 +508,15 @@ async function togglePlay() {
         });
 
         startSchedulerLoop();
+
+        // Background Playback: Play silent audio loop
+        // This keeps the audio session unlocking and prevents sleeping
+        silentAudio.play().catch(e => console.warn('Silent audio play failed', e));
+
+        // Update Media Session state
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.playbackState = 'playing';
+        }
     }
 }
 
@@ -477,8 +529,10 @@ function addMetronome() {
 playBtn.addEventListener('click', togglePlay);
 addMetronomeBtn.addEventListener('click', addMetronome);
 
+// Initialize presets on load (moved here appropriately or just keep distinct calls)
 // Add initial metronome
 addMetronome();
+setupMediaSession();
 
 // ==========================================
 // Preset Management
