@@ -44,6 +44,9 @@ function unlockAudio() {
     // Remove listeners once unlocked
     document.removeEventListener('touchstart', unlockAudio);
     document.removeEventListener('click', unlockAudio);
+
+    // Also prepare PiP stream early to ensure video is ready
+    preparePip();
 }
 
 // Add unlock listeners
@@ -539,6 +542,11 @@ function setupPip() {
 
     pipVideo.srcObject = finalStream;
     pipVideo.muted = false;
+}
+
+// Prepare PiP stream early (idempotent)
+function preparePip() {
+    if (!pipCanvas) setupPip();
 }
 
 function drawPipCanvas() {
