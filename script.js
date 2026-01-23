@@ -504,8 +504,33 @@ function setupPip() {
     drawPipCanvas();
 
     // Capture stream from canvas
-    const stream = pipCanvas.captureStream(10); // 10 FPS is enough
-    pipVideo.srcObject = stream;
+    const canvasStream = pipCanvas.captureStream(10); // 10 FPS is enough
+
+    // Create a combined stream with a silent audio track
+    // This is often required for PiP to work reliably on iOS
+    const finalStream = new MediaStream();
+
+    // Add video tracks
+    canvasStream.getVideoTracks().forEach(track => finalStream.addTrack(track));
+
+    // Add silent audio track if audioContext is available
+    if (audioContext) {
+        const dest = audioContext.createMediaStreamDestination();
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        gain.gain.value = 0; // Completely silent
+        osc.connect(gain);
+        gain.connect(dest);
+        osc.start();
+
+        const audioTrack = dest.stream.getAudioTracks()[0];
+        if (audioTrack) {
+            finalStream.addTrack(audioTrack);
+        }
+    }
+
+    pipVideo.srcObject = finalStream;
+    pipVideo.muted = false; // Important: must not be muted for "playback" to count
 }
 
 function drawPipCanvas() {
