@@ -473,6 +473,40 @@ function setupMediaSession() {
     }
 }
 
+// Keep Alive Oscillator for PWA
+// Plays an imperceptible sound to keep the Audio hardware active
+let keepAliveOsc = null;
+
+function startKeepAliveOscillator() {
+    if (!audioContext) return;
+    if (keepAliveOsc) return;
+
+    keepAliveOsc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    // Imperceptible sound (20Hz is at the lower limit of hearing, very low volume)
+    // Using 440Hz but extremely quiet is sometimes more reliable for "activity" detection than 20Hz
+    keepAliveOsc.type = 'sine';
+    keepAliveOsc.frequency.value = 440;
+    gain.gain.value = 0.0001; // Effectively silent
+
+    keepAliveOsc.connect(gain);
+    gain.connect(audioContext.destination);
+    keepAliveOsc.start();
+}
+
+function stopKeepAliveOscillator() {
+    if (keepAliveOsc) {
+        try {
+            keepAliveOsc.stop();
+            keepAliveOsc.disconnect();
+        } catch (e) {
+            console.warn(e);
+        }
+        keepAliveOsc = null;
+    }
+}
+
 // Global Controls
 async function togglePlay() {
     if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -493,6 +527,8 @@ async function togglePlay() {
 
         // Background Playback: Pause silent audio
         silentAudio.pause();
+        stopKeepAliveOscillator();
+
         // Update Media Session state
         if ('mediaSession' in navigator) {
             navigator.mediaSession.playbackState = 'paused';
@@ -521,6 +557,7 @@ async function togglePlay() {
         // Background Playback: Play silent audio loop
         // This keeps the audio session unlocking and prevents sleeping
         silentAudio.play().catch(e => console.warn('Silent audio play failed', e));
+        startKeepAliveOscillator();
 
         // Update Media Session state
         if ('mediaSession' in navigator) {
