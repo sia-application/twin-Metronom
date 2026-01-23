@@ -2,19 +2,13 @@
 let audioContext = null;
 let isPlaying = false;
 let metronomes = [];
-// let schedulerTimer = null; // Replaced by Worker
-let timerWorker = null; // Web Worker instance
+let schedulerTimer = null;
 let nextNoteTime = 0;
 let scheduleAheadTime = 0.1;
 let lookahead = 25;
 let audioUnlocked = false;
 
 // Unlock AudioContext for iOS
-// Unlock AudioContext for iOS
-// Global silent audio for background playback
-const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAGZGF0YQQAAAAAAA==");
-silentAudio.loop = true;
-
 function unlockAudio() {
     if (audioUnlocked) return;
 
@@ -36,17 +30,11 @@ function unlockAudio() {
     source.connect(audioContext.destination);
     source.start(0);
 
-    // 3. Play silent HTML5 Audio
-    // Just triggering play() unlocks the element for later programmatic control
+    // 3. Play a silent HTML5 Audio element to force iOS Audio Session to "Playback"
+    // This allows sound even when the hardware mute switch is on.
+    const silentAudio = new Audio("data:audio/wav;base64,UklGRigAAABXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAGZGF0YQQAAAAAAA==");
     silentAudio.play().then(() => {
-        console.log('Silent HTML5 audio unpaused/unlocked');
-        // Immediately pause it if we are not actually playing yet,
-        // unless we want to keep it running to keep the session active?
-        // Actually, for "unlocking", we usually just need a user interaction.
-        // We will manage actual playback state in togglePlay.
-        if (!isPlaying) {
-            silentAudio.pause();
-        }
+        console.log('Silent HTML5 audio played, forcing Playback session');
     }).catch(e => {
         console.warn('Silent HTML5 audio play failed', e);
     });
@@ -323,32 +311,18 @@ class Metronome {
 
 
 // Global Scheduler State Management
-
-// Initialize Worker
-if (window.Worker) {
-    timerWorker = new Worker('worker.js');
-    timerWorker.onmessage = function (e) {
-        if (e.data === "tick") {
-            scheduler();
-        }
-    };
-} else {
-    console.warn('Web Workers are not supported in this browser.');
-}
-
 function startSchedulerLoop() {
-    if (timerWorker) {
-        timerWorker.postMessage("start");
+    if (!schedulerTimer) {
+        scheduler();
+        updateGlobalPlayState();
     }
-    updateGlobalPlayState();
 }
 
 function checkAutoStop() {
     const anyPlaying = metronomes.some(m => m.isPlaying);
     if (!anyPlaying) {
-        if (timerWorker) {
-            timerWorker.postMessage("stop");
-        }
+        clearTimeout(schedulerTimer);
+        schedulerTimer = null;
     }
 }
 
@@ -384,6 +358,13 @@ function scheduler() {
             advanceMetronomeNote(m);
         }
     });
+
+    // Continue loop if anyone is playing
+    if (metronomes.some(m => m.isPlaying)) {
+        schedulerTimer = setTimeout(scheduler, lookahead);
+    } else {
+        schedulerTimer = null;
+    }
 }
 
 function scheduleMetronomeNote(metronome, time) {
@@ -449,63 +430,7 @@ function advanceMetronomeNote(metronome) {
     metronome.currentBeat = (metronome.currentBeat + 1) % pattern.beats;
 }
 
-// Media Session API Setup
-function setupMediaSession() {
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = new MediaMetadata({
-            title: 'MALTINOME',
-            artist: 'SiA',
-            album: 'Metronome App',
-            artwork: [
-                { src: 'icon.png', sizes: '512x512', type: 'image/png' }
-            ]
-        });
 
-        navigator.mediaSession.setActionHandler('play', () => {
-            if (!isPlaying) togglePlay();
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            if (isPlaying) togglePlay();
-        });
-        navigator.mediaSession.setActionHandler('stop', () => {
-            if (isPlaying) togglePlay();
-        });
-    }
-}
-
-// Keep Alive Oscillator for PWA
-// Plays an imperceptible sound to keep the Audio hardware active
-let keepAliveOsc = null;
-
-function startKeepAliveOscillator() {
-    if (!audioContext) return;
-    if (keepAliveOsc) return;
-
-    keepAliveOsc = audioContext.createOscillator();
-    const gain = audioContext.createGain();
-
-    // Imperceptible sound (20Hz is at the lower limit of hearing, very low volume)
-    // Using 440Hz but extremely quiet is sometimes more reliable for "activity" detection than 20Hz
-    keepAliveOsc.type = 'sine';
-    keepAliveOsc.frequency.value = 440;
-    gain.gain.value = 0.0001; // Effectively silent
-
-    keepAliveOsc.connect(gain);
-    gain.connect(audioContext.destination);
-    keepAliveOsc.start();
-}
-
-function stopKeepAliveOscillator() {
-    if (keepAliveOsc) {
-        try {
-            keepAliveOsc.stop();
-            keepAliveOsc.disconnect();
-        } catch (e) {
-            console.warn(e);
-        }
-        keepAliveOsc = null;
-    }
-}
 
 // Global Controls
 async function togglePlay() {
@@ -524,16 +449,6 @@ async function togglePlay() {
         metronomes.forEach(m => {
             if (m.isPlaying) m.toggle();
         });
-
-        // Background Playback: Pause silent audio
-        silentAudio.pause();
-        stopKeepAliveOscillator();
-
-        // Update Media Session state
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'paused';
-        }
-
     } else {
         // START ALL
         const now = audioContext.currentTime;
@@ -553,16 +468,6 @@ async function togglePlay() {
         });
 
         startSchedulerLoop();
-
-        // Background Playback: Play silent audio loop
-        // This keeps the audio session unlocking and prevents sleeping
-        silentAudio.play().catch(e => console.warn('Silent audio play failed', e));
-        startKeepAliveOscillator();
-
-        // Update Media Session state
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.playbackState = 'playing';
-        }
     }
 }
 
@@ -577,8 +482,8 @@ addMetronomeBtn.addEventListener('click', addMetronome);
 
 // Initialize presets on load (moved here appropriately or just keep distinct calls)
 // Add initial metronome
+// Add initial metronome
 addMetronome();
-setupMediaSession();
 
 // ==========================================
 // Preset Management
