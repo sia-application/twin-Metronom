@@ -1233,17 +1233,7 @@ header h1 {
     transform: translateY(0);
 }
 
-.preset-btn.save-btn {
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
-    border-color: transparent;
-    color: white;
-    font-weight: 600;
-}
-
-.preset-btn.save-btn:hover {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
-}
+/* Conflicting save-btn style removed */
 
 .preset-btn.load-btn:hover {
     border-color: var(--primary);
@@ -1680,30 +1670,39 @@ header h1 {
 
 /* Save Button */
 .save-btn {
-    width: 50%;
-    /* Match mobile width preference or auto centered */
-    /* Screenshot looked like a wide button but centered. Let's use 50% centered as safe bet or auto if text short */
-    /* Wait, user said "restore save button size" in previous step. */
-    /* Let's stick to centering it. */
-    align-self: center;
-    padding: 0 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    background: var(--primary);
-    color: #fff;
-    margin-top: 5px;
+    /* Reset specific styles to match standard preset-btn */
+    width: 40px;
     height: 40px;
-    /* Match other buttons height roughly */
+    padding: 0;
+    margin: 5px auto 0 auto;
+    /* Center horizontally */
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    border: none;
+    /* preset-btn has no border by default but let's be safe */
     display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 1.2rem;
+    font-weight: normal;
+    /* preset-btn default */
 }
 
 .save-btn:hover {
-    background: var(--primary-dark);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+    background: rgba(46, 204, 113, 0.2);
+    /* Green tint for safe */
+    box-shadow: none;
+    transform: scale(1.05);
 }
+
+@media (max-width: 600px) {
+    .save-btn {
+        width: 40px;
+        /* Force square on mobile too */
+    }
+}
+
+/* Old hover removed */
 
 #new-folder-input {
     display: none;
