@@ -853,10 +853,30 @@ if (presetToggleBtn && presetSection && presetContentBody) {
 // Initial display setup if needed (default close is handled by CSS)
 
 // ==========================================
-// Preset Management
+// Preset Management (Firebase)
 // ==========================================
 
-const PRESET_STORAGE_KEY = 'maltinome_presets';
+const firebaseConfig = {
+    // TODO: Replace with your Firebase project config
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+let db;
+try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    console.log("Firebase initialized");
+} catch (e) {
+    console.error("Firebase initialization failed:", e);
+    // Fallback? Or just alert user.
+}
+
 
 // Preset DOM Elements
 const folderSelect = document.getElementById('folder-select');
@@ -900,44 +920,31 @@ function showToast(message, type = 'info') {
     }, 2500);
 }
 
-// Data Migration & Retrieval
-function getPresetData() {
+// Data Retrieval (Async)
+async function getPresetData() {
+    if (!db) return {};
     try {
-        const raw = localStorage.getItem(PRESET_STORAGE_KEY);
-        if (!raw) return {};
-
-        const data = JSON.parse(raw);
-
-        // Check for migration: If any key's value has 'metronomes' property directly, it's flat.
-        // Or if it's empty, return empty object.
-        const keys = Object.keys(data);
-        if (keys.length > 0) {
-            const firstKey = keys[0];
-            // Duck typing: check if the first item looks like a preset (has metronomes array)
-            // or if the data structure is the old flat format
-            if (data[firstKey] && data[firstKey].metronomes) {
-                console.log('Migrating presets to folder structure...');
-                const migrated = {
-                    'デフォルト': data
-                };
-                savePresetData(migrated);
-                return migrated;
-            }
+        const doc = await db.collection('appData').doc('presets').get();
+        if (doc.exists) {
+            return doc.data();
+        } else {
+            return {};
         }
-
-        return data;
     } catch (e) {
-        console.error('Failed to load presets:', e);
+        console.error('Failed to load presets from Firebase:', e);
+        showToast('データの読み込みに失敗しました (Firebase Configを確認してください)', 'error');
         return {};
     }
 }
 
-function savePresetData(data) {
+async function savePresetData(data) {
+    if (!db) return false;
     try {
-        localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(data));
+        await db.collection('appData').doc('presets').set(data);
         return true;
     } catch (e) {
-        console.error('Failed to save presets:', e);
+        console.error('Failed to save presets to Firebase:', e);
+        showToast('データの保存に失敗しました', 'error');
         return false;
     }
 }
@@ -1049,9 +1056,9 @@ function applyMetronomeState(metronome, state) {
     metronome.updateBeatDots();
 }
 
-// UI Refreshers
-function refreshFolderSelects() {
-    const data = getPresetData();
+// UI Refreshers (Async)
+async function refreshFolderSelects() {
+    const data = await getPresetData();
     const folderNames = Object.keys(data).sort((a, b) => a.localeCompare(b, 'ja'));
 
     // 1. Main Folder Select
@@ -1087,10 +1094,10 @@ function refreshFolderSelects() {
 
     // Trigger UI updates
     toggleNewFolderInput();
-    refreshPresetSelect();
+    await refreshPresetSelect(data); // Pass data directly
 }
 
-function refreshPresetSelect() {
+async function refreshPresetSelect(providedData = null) {
     const folderName = folderSelect.value;
     presetSelect.innerHTML = '<option value="">-- プリセットを選択 --</option>';
 
@@ -1099,7 +1106,7 @@ function refreshPresetSelect() {
         return;
     }
 
-    const data = getPresetData();
+    const data = providedData || await getPresetData();
     const folder = data[folderName];
 
     if (folder) {
@@ -1131,7 +1138,7 @@ function updatePresetButtonStates() {
 
 
 // SAVE Logic
-function savePreset() {
+async function savePreset() {
     const presetName = presetNameInput.value.trim();
     if (!presetName) {
         showToast('プリセット名を入力してください', 'error');
@@ -1154,7 +1161,10 @@ function savePreset() {
         return;
     }
 
-    const data = getPresetData();
+    savePresetBtn.disabled = true; // Prevent double click
+
+    // We get fresh data to avoid overwriting recent changes
+    const data = await getPresetData();
 
     // Create folder if not exists
     if (!data[folderName]) {
@@ -1170,7 +1180,7 @@ function savePreset() {
         metronomes: metronomes.map(m => extractMetronomeState(m))
     };
 
-    if (savePresetData(data)) {
+    if (await savePresetData(data)) {
         showToast(isOverwrite ? `「${folderName} / ${presetName}」を上書き保存しました` : `「${folderName} / ${presetName}」を保存しました`, 'success');
         presetNameInput.value = '';
         if (saveFolderSelect.value === 'new') {
@@ -1178,20 +1188,21 @@ function savePreset() {
         }
 
         // Refresh UIs
-        refreshFolderSelects();
+        await refreshFolderSelects();
 
         // Auto-select the saved one
         folderSelect.value = folderName;
-        refreshPresetSelect();
+        await refreshPresetSelect(data);
         presetSelect.value = presetName;
         updatePresetButtonStates();
     } else {
-        showToast('保存に失敗しました', 'error');
+        // showToast handled in savePresetData
     }
+    savePresetBtn.disabled = false;
 }
 
 // LOAD Logic
-function loadPreset() {
+async function loadPreset() {
     const folderName = folderSelect.value;
     const presetName = presetSelect.value;
 
@@ -1200,12 +1211,14 @@ function loadPreset() {
         return;
     }
 
-    const data = getPresetData();
+    loadPresetBtn.disabled = true;
+    const data = await getPresetData();
     const folder = data[folderName];
     const preset = folder ? folder[presetName] : null;
 
     if (!preset) {
         showToast('プリセットが見つかりません', 'error');
+        loadPresetBtn.disabled = false;
         return;
     }
 
@@ -1227,10 +1240,11 @@ function loadPreset() {
     });
 
     showToast(`「${presetName}」を読み込みました`, 'success');
+    loadPresetBtn.disabled = false;
 }
 
 // DELETE Logic
-function deletePreset() {
+async function deletePreset() {
     const folderName = folderSelect.value;
     const presetName = presetSelect.value;
 
@@ -1242,26 +1256,22 @@ function deletePreset() {
         return;
     }
 
-    const data = getPresetData();
+    deletePresetBtn.disabled = true;
+    const data = await getPresetData();
     if (data[folderName] && data[folderName][presetName]) {
         delete data[folderName][presetName];
 
-        // Optional: Remove empty folders?
-        // Let's keep them for now as per plan, unless explicitly empty.
-        // If user wants to delete folder, maybe we need a separate "Delete Folder" button?
-        // For now, if folder is empty, maybe we clean it up to keep it clean.
-        // Actually, let's keep it simple: If folder is empty, delete it.
         if (Object.keys(data[folderName]).length === 0) {
             delete data[folderName];
             showToast(`フォルダ「${folderName}」も空になったため削除しました`, 'info');
         }
 
-        savePresetData(data);
+        await savePresetData(data);
         showToast(`「${presetName}」を削除しました`, 'success');
 
-        refreshFolderSelects();
-        refreshPresetSelect();
+        await refreshFolderSelects();
     }
+    deletePresetBtn.disabled = false;
 }
 
 
