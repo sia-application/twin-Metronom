@@ -1466,17 +1466,20 @@ header h1 {
     opacity: 1;
 }
 
+/* Preset Controls - Universal Stacked Layout */
 .preset-controls {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    /* Use column stack by default (PC & Mobile) */
     gap: 10px;
     margin-bottom: 16px;
-    align-items: center;
-    justify-content: center;
+    align-items: stretch;
+    /* Stretch children to full width */
 }
 
 .preset-select {
-    flex: 1 1 140px;
+    width: 100%;
+    /* Full width */
     padding: 10px 12px;
     border-radius: 12px;
     background: var(--bg-glass);
@@ -1486,12 +1489,21 @@ header h1 {
     outline: none;
     cursor: pointer;
     transition: all 0.3s ease;
+    -webkit-appearance: none;
+    appearance: none;
+    /* Removed min-width, flex basis, etc. */
 }
 
 /* Container for Load/Delete buttons */
 .preset-actions {
     display: flex;
     gap: 10px;
+    justify-content: center;
+    /* Center buttons */
+    margin-top: 5px;
+    /* Ensure flex row for side-by-side buttons */
+    flex-direction: row;
+    width: 100%;
 }
 
 /* Mobile optimizations for Preset Controls */
@@ -1578,6 +1590,7 @@ header h1 {
     background: rgba(231, 76, 60, 0.2);
 }
 
+/* Preset Save Controls - Universal Stacked Layout */
 .preset-save-controls {
     display: flex;
     flex-direction: column;
@@ -1587,8 +1600,10 @@ header h1 {
 .save-folder-container,
 .save-preset-container {
     display: flex;
+    flex-direction: column;
+    /* Stack internally */
     gap: 10px;
-    flex-wrap: wrap;
+    width: 100%;
 }
 
 .save-folder-container {
@@ -1596,12 +1611,11 @@ header h1 {
 }
 
 .save-folder-container #save-folder-select {
-    flex: 1;
-    min-width: 120px;
+    width: 100%;
 }
 
 .preset-name-input {
-    flex: 1;
+    width: 100%;
     padding: 10px 12px;
     border-radius: 12px;
     background: var(--bg-dark);
@@ -1617,13 +1631,25 @@ header h1 {
     box-shadow: 0 0 10px rgba(108, 92, 231, 0.2);
 }
 
+/* Save Button */
 .save-btn {
-    width: auto;
+    width: 50%;
+    /* Match mobile width preference or auto centered */
+    /* Screenshot looked like a wide button but centered. Let's use 50% centered as safe bet or auto if text short */
+    /* Wait, user said "restore save button size" in previous step. */
+    /* Let's stick to centering it. */
+    align-self: center;
     padding: 0 20px;
     font-size: 0.9rem;
     font-weight: 600;
     background: var(--primary);
     color: #fff;
+    margin-top: 5px;
+    height: 40px;
+    /* Match other buttons height roughly */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .save-btn:hover {
