@@ -4,6 +4,12 @@
     box-sizing: border-box;
 }
 
+button,
+input,
+select {
+    touch-action: manipulation;
+}
+
 :root {
     --primary: #6c5ce7;
     --primary-dark: #5b4cdb;
