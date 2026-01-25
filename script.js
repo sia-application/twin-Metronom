@@ -653,6 +653,19 @@ addMetronomeBtn.addEventListener('click', addMetronome);
 // Add initial metronome
 addMetronome();
 
+// Preset Toggle
+const presetToggleBtn = document.getElementById('preset-toggle-btn');
+const presetSection = document.getElementById('preset-section');
+
+if (presetToggleBtn && presetSection) {
+    presetToggleBtn.addEventListener('click', () => {
+        const isOpen = presetSection.classList.toggle('open');
+        presetToggleBtn.textContent = isOpen ? 'プリセット ▲' : 'プリセット ▼';
+    });
+}
+
+// Initial display setup if needed (default close is handled by CSS)
+
 // ==========================================
 // Preset Management
 // ==========================================
