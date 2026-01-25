@@ -1778,28 +1778,18 @@ header h1 {
 .toast.error {
     border-left: 4px solid #e74c3c;
 }
+
 /* Rhythm Practice Section */
+/* .rhythm-practice-toggle styles removed to use .detail-toggle */
+/* but we might want to keep the margin-top if needed, or adjust spacing in HTML structure. 
+   detail-toggle has margin-bottom. 
+   The rhythm practice section is inserted before detail toggle. 
+   Spacing might need adjustment. */
 .rhythm-practice-toggle {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: all 0.3s ease;
     margin-top: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    /* Keep margin top for separation from previous element */
 }
 
-.rhythm-practice-toggle:hover {
-    color: var(--text-primary);
-}
 
 .rhythm-practice-settings {
     max-height: 0;
@@ -1811,7 +1801,8 @@ header h1 {
 }
 
 .rhythm-practice-settings.open {
-    max-height: 800px; /* Sufficient height */
+    max-height: 800px;
+    /* Sufficient height */
     padding: 20px;
     margin-bottom: 24px;
 }
@@ -1835,14 +1826,40 @@ header h1 {
     animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.evaluation-text.excellent { background: linear-gradient(135deg, #00b894, #55efc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.evaluation-text.great { background: linear-gradient(135deg, #0984e3, #74b9ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.evaluation-text.nice { background: linear-gradient(135deg, #fdcb6e, #ffeaa7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.evaluation-text.miss { background: linear-gradient(135deg, #ffeaa7, #b2bec3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.evaluation-text.excellent {
+    background: linear-gradient(135deg, #00b894, #55efc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.evaluation-text.great {
+    background: linear-gradient(135deg, #0984e3, #74b9ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.evaluation-text.nice {
+    background: linear-gradient(135deg, #fdcb6e, #ffeaa7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.evaluation-text.miss {
+    background: linear-gradient(135deg, #ffeaa7, #b2bec3);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 
 @keyframes popIn {
-    0% { transform: scale(0.5); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 .practice-controls {
@@ -1907,7 +1924,7 @@ header h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .practice-tap-area:active {
@@ -1948,16 +1965,24 @@ header h1 {
 }
 
 .count-item.excellent .count-label,
-.count-item.excellent .count-value { color: #55efc4; }
+.count-item.excellent .count-value {
+    color: #55efc4;
+}
 
 .count-item.great .count-label,
-.count-item.great .count-value { color: #74b9ff; }
+.count-item.great .count-value {
+    color: #74b9ff;
+}
 
 .count-item.nice .count-label,
-.count-item.nice .count-value { color: #ffeaa7; }
+.count-item.nice .count-value {
+    color: #ffeaa7;
+}
 
 .count-item.miss .count-label,
-.count-item.miss .count-value { color: #b2bec3; }
+.count-item.miss .count-value {
+    color: #b2bec3;
+}
 
 .practice-display {
     flex-direction: column;

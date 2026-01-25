@@ -265,6 +265,7 @@ class Metronome {
         offToggle.addEventListener('click', () => {
             this.isOffbeat = !this.isOffbeat;
             offToggle.classList.toggle('offbeat', this.isOffbeat);
+            this.updateBeatDots();
         });
 
         const accToggle = el.querySelector('.accent-toggle');
@@ -299,7 +300,7 @@ class Metronome {
                 const textMap = {
                     'main': '表拍のみ',
                     'offbeat': '裏拍のみ',
-                    'both': '両方 (短)'
+                    'both': '両拍'
                 };
 
                 if (visValue) {
@@ -315,7 +316,7 @@ class Metronome {
         this.updateBeatDots();
 
         // Detail Settings Toggle
-        const detailToggle = el.querySelector('.detail-toggle');
+        const detailToggle = el.querySelector('.main-detail-toggle');
         const detailSettings = el.querySelector('.detail-settings');
 
         if (detailToggle && detailSettings) {
@@ -442,7 +443,13 @@ class Metronome {
                 }
             });
 
-            container.appendChild(offDot);
+            if (this.isOffbeat) {
+                container.appendChild(offDot);
+                container.appendChild(dot);
+            } else {
+                container.appendChild(dot);
+                container.appendChild(offDot);
+            }
         }
     }
 
@@ -1029,7 +1036,7 @@ function applyMetronomeState(metronome, state) {
         const textMap = {
             'main': '表拍のみ',
             'offbeat': '裏拍のみ',
-            'both': '両方 (短)'
+            'both': '両拍'
         };
 
         if (visValue) {
