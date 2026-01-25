@@ -130,6 +130,39 @@ class Metronome {
         el.querySelector('.tempo-down').addEventListener('click', () => updateTempo(this.tempo - 1));
         el.querySelector('.tempo-up').addEventListener('click', () => updateTempo(this.tempo + 1));
 
+        // TAP BPM
+        const tapBtn = el.querySelector('.tap-btn');
+        let lastTapTime = 0;
+        let tapIntervals = [];
+
+        tapBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const now = Date.now();
+
+            // Reset if too long between taps (2 seconds)
+            if (now - lastTapTime > 2000) {
+                tapIntervals = [];
+            } else {
+                const interval = now - lastTapTime;
+                tapIntervals.push(interval);
+
+                // Keep last 4 intervals for average
+                if (tapIntervals.length > 4) tapIntervals.shift();
+
+                // Calculate average
+                if (tapIntervals.length >= 2) {
+                    const avgInterval = tapIntervals.reduce((a, b) => a + b) / tapIntervals.length;
+                    const bpm = Math.round(60000 / avgInterval);
+                    updateTempo(bpm);
+                }
+            }
+            lastTapTime = now;
+
+            // Visual feedback
+            tapBtn.style.transform = 'scale(0.95)';
+            setTimeout(() => tapBtn.style.transform = '', 100);
+        });
+
         // Rhythm Patterns
         const rhythmBtns = el.querySelectorAll('.rhythm-btn');
         rhythmBtns.forEach(btn => {

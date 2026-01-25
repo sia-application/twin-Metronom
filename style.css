@@ -1335,3 +1335,35 @@ header h1 {
 .beat-dots.mode-offbeat-only .dot {
     display: none;
 }
+
+/* Tap Button */
+/* Tap Button */
+.tap-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.tap-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.1);
+}
+
+.tap-btn:active {
+    transform: scale(0.95);
+    background: var(--beat-active);
+    color: var(--bg-dark);
+}
