@@ -1419,3 +1419,266 @@ header h1 {
     background: var(--beat-active);
     color: var(--bg-dark);
 }
+
+/* Preset Section */
+.preset-section {
+    background: var(--bg-card);
+    border-radius: 20px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.preset-header {
+    margin-bottom: 16px;
+}
+
+.preset-header h2 {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.preset-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+    align-items: center;
+    justify-content: center;
+}
+
+.preset-select {
+    flex: 1 1 140px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Container for Load/Delete buttons */
+.preset-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Mobile optimizations for Preset Controls */
+@media (max-width: 600px) {
+    .preset-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .preset-select {
+        width: 100%;
+        flex: 1 1 auto;
+    }
+
+    /* Container for buttons to keep them centered and side-by-side or stacked central */
+    .preset-buttons-container {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    /* Since we can't easily change HTML structure in CSS only, 
+       we'll rely on flex-wrap behavior if we don't change HTML.
+       But user wants "1 form 1 row". 
+       Let's force selects to be 100% width. */
+
+    .preset-select {
+        flex: 1 1 100%;
+    }
+
+    /* Center the button group */
+    .preset-actions {
+        display: flex;
+        flex-direction: row;
+        /* Force row */
+        /* Ensure flex is applied */
+        width: 100%;
+        justify-content: center;
+        margin-top: 5px;
+    }
+
+    /* Make buttons slightly larger touch targets but keep distinct */
+    .preset-btn {
+        width: 60px;
+        height: 50px;
+    }
+}
+
+.preset-select:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--secondary);
+}
+
+.preset-select option {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+.preset-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: none;
+    background: var(--bg-glass);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.load-btn:hover {
+    background: rgba(0, 210, 211, 0.2);
+}
+
+.delete-btn:hover {
+    background: rgba(231, 76, 60, 0.2);
+}
+
+.preset-save-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.save-folder-container,
+.save-preset-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.save-folder-container {
+    justify-content: flex-end;
+}
+
+.save-folder-container #save-folder-select {
+    flex: 1;
+    min-width: 120px;
+}
+
+.preset-name-input {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--bg-dark);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.preset-name-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(108, 92, 231, 0.2);
+}
+
+.save-btn {
+    width: auto;
+    padding: 0 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    background: var(--primary);
+    color: #fff;
+}
+
+.save-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+}
+
+#new-folder-input {
+    display: none;
+    width: 100%;
+    margin-top: 5px;
+}
+
+#new-folder-input.show {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Mobile optimization for Save Controls */
+@media (max-width: 600px) {
+
+    .save-folder-container,
+    .save-preset-container {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        /* Force stretch to full width */
+    }
+
+    .save-folder-container #save-folder-select,
+    .preset-name-input,
+    #new-folder-input {
+        width: 100% !important;
+        max-width: 100%;
+        flex: 1 0 auto;
+        margin-left: 0;
+        margin-right: 0;
+        box-sizing: border-box;
+    }
+
+    .save-btn {
+        width: 50%;
+        /* Make button reasonably wide but centered */
+        justify-content: center;
+        margin: 0 auto;
+        /* Center with auto margins since parent is stretching */
+    }
+}
+
+/* Toast */
+.toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(22, 33, 62, 0.95);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 50px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+}
+
+.toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast.success {
+    border-left: 4px solid var(--primary);
+}
+
+.toast.error {
+    border-left: 4px solid #e74c3c;
+}

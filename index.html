@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>MALTINOME</title>
-    <link rel="stylesheet" href="style.css?v=1.3">
+    <link rel="stylesheet" href="style.css?v=1.4">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
@@ -35,16 +35,30 @@
                     <h2>プリセット</h2>
                 </div>
                 <div class="preset-controls">
+                    <select id="folder-select" class="preset-select folder-select">
+                        <option value="">-- フォルダを選択 --</option>
+                    </select>
                     <select id="preset-select" class="preset-select">
                         <option value="">-- プリセットを選択 --</option>
                     </select>
-                    <button id="load-preset-btn" class="preset-btn load-btn" title="読み込み">📥</button>
-                    <button id="delete-preset-btn" class="preset-btn delete-btn" title="削除">🗑️</button>
+                    <div class="preset-actions">
+                        <button id="load-preset-btn" class="preset-btn load-btn" title="読み込み">📥</button>
+                        <button id="delete-preset-btn" class="preset-btn delete-btn" title="削除">🗑️</button>
+                    </div>
                 </div>
                 <div class="preset-save-controls">
-                    <input type="text" id="preset-name-input" class="preset-name-input" placeholder="プリセット名を入力..."
-                        maxlength="30">
-                    <button id="save-preset-btn" class="preset-btn save-btn" title="保存">💾 保存</button>
+                    <div class="save-folder-container">
+                        <select id="save-folder-select" class="preset-select">
+                            <option value="new">+ 新規フォルダ作成</option>
+                        </select>
+                        <input type="text" id="new-folder-input" class="preset-name-input" placeholder="フォルダ名を入力..."
+                            maxlength="20">
+                    </div>
+                    <div class="save-preset-container">
+                        <input type="text" id="preset-name-input" class="preset-name-input" placeholder="プリセット名を入力..."
+                            maxlength="30">
+                        <button id="save-preset-btn" class="preset-btn save-btn" title="保存">💾 保存</button>
+                    </div>
                 </div>
             </div>
 

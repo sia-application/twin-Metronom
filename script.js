@@ -660,9 +660,16 @@ addMetronome();
 const PRESET_STORAGE_KEY = 'maltinome_presets';
 
 // Preset DOM Elements
+const folderSelect = document.getElementById('folder-select');
 const presetSelect = document.getElementById('preset-select');
+
+// Save Controls
+const saveFolderSelect = document.getElementById('save-folder-select');
+const newFolderInput = document.getElementById('new-folder-input');
 const presetNameInput = document.getElementById('preset-name-input');
 const savePresetBtn = document.getElementById('save-preset-btn');
+
+// Action Buttons
 const loadPresetBtn = document.getElementById('load-preset-btn');
 const deletePresetBtn = document.getElementById('delete-preset-btn');
 
@@ -694,21 +701,41 @@ function showToast(message, type = 'info') {
     }, 2500);
 }
 
-// Get all presets from LocalStorage
-function getPresets() {
+// Data Migration & Retrieval
+function getPresetData() {
     try {
-        const data = localStorage.getItem(PRESET_STORAGE_KEY);
-        return data ? JSON.parse(data) : {};
+        const raw = localStorage.getItem(PRESET_STORAGE_KEY);
+        if (!raw) return {};
+
+        const data = JSON.parse(raw);
+
+        // Check for migration: If any key's value has 'metronomes' property directly, it's flat.
+        // Or if it's empty, return empty object.
+        const keys = Object.keys(data);
+        if (keys.length > 0) {
+            const firstKey = keys[0];
+            // Duck typing: check if the first item looks like a preset (has metronomes array)
+            // or if the data structure is the old flat format
+            if (data[firstKey] && data[firstKey].metronomes) {
+                console.log('Migrating presets to folder structure...');
+                const migrated = {
+                    'デフォルト': data
+                };
+                savePresetData(migrated);
+                return migrated;
+            }
+        }
+
+        return data;
     } catch (e) {
         console.error('Failed to load presets:', e);
         return {};
     }
 }
 
-// Save presets to LocalStorage
-function savePresetsToStorage(presets) {
+function savePresetData(data) {
     try {
-        localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(presets));
+        localStorage.setItem(PRESET_STORAGE_KEY, JSON.stringify(data));
         return true;
     } catch (e) {
         console.error('Failed to save presets:', e);
@@ -823,14 +850,104 @@ function applyMetronomeState(metronome, state) {
     metronome.updateBeatDots();
 }
 
-// Save current preset
-function savePreset() {
-    const name = presetNameInput.value.trim();
+// UI Refreshers
+function refreshFolderSelects() {
+    const data = getPresetData();
+    const folderNames = Object.keys(data).sort((a, b) => a.localeCompare(b, 'ja'));
 
-    if (!name) {
+    // 1. Main Folder Select
+    const currentMainFolder = folderSelect.value;
+    folderSelect.innerHTML = '<option value="">-- フォルダを選択 --</option>';
+    folderNames.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        folderSelect.appendChild(opt);
+    });
+    if (folderNames.includes(currentMainFolder)) folderSelect.value = currentMainFolder;
+
+    // 2. Save Folder Select
+    const currentSaveFolder = saveFolderSelect.value;
+    // Keep the first "New Folder" option
+    while (saveFolderSelect.options.length > 1) {
+        saveFolderSelect.remove(1);
+    }
+    folderNames.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        saveFolderSelect.appendChild(opt);
+    });
+
+    // Restore or default
+    if (folderNames.includes(currentSaveFolder)) {
+        saveFolderSelect.value = currentSaveFolder;
+    } else if (folderNames.length > 0 && currentSaveFolder !== 'new') {
+        saveFolderSelect.value = folderNames[0]; // Default to first existing folder if not new
+    }
+
+    // Trigger UI updates
+    toggleNewFolderInput();
+    refreshPresetSelect();
+}
+
+function refreshPresetSelect() {
+    const folderName = folderSelect.value;
+    presetSelect.innerHTML = '<option value="">-- プリセットを選択 --</option>';
+
+    if (!folderName) {
+        updatePresetButtonStates();
+        return;
+    }
+
+    const data = getPresetData();
+    const folder = data[folderName];
+
+    if (folder) {
+        const presets = Object.keys(folder).sort((a, b) => a.localeCompare(b, 'ja'));
+        presets.forEach(name => {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            presetSelect.appendChild(opt);
+        });
+    }
+    updatePresetButtonStates();
+}
+
+function toggleNewFolderInput() {
+    if (saveFolderSelect.value === 'new') {
+        newFolderInput.classList.add('show');
+        newFolderInput.focus();
+    } else {
+        newFolderInput.classList.remove('show');
+    }
+}
+
+function updatePresetButtonStates() {
+    const hasSelection = presetSelect.value !== '';
+    loadPresetBtn.disabled = !hasSelection;
+    deletePresetBtn.disabled = !hasSelection;
+}
+
+
+// SAVE Logic
+function savePreset() {
+    const presetName = presetNameInput.value.trim();
+    if (!presetName) {
         showToast('プリセット名を入力してください', 'error');
         presetNameInput.focus();
         return;
+    }
+
+    let folderName = saveFolderSelect.value;
+    if (folderName === 'new') {
+        folderName = newFolderInput.value.trim();
+        if (!folderName) {
+            showToast('新規フォルダ名を入力してください', 'error');
+            newFolderInput.focus();
+            return;
+        }
     }
 
     if (metronomes.length === 0) {
@@ -838,37 +955,55 @@ function savePreset() {
         return;
     }
 
-    const presets = getPresets();
-    const isOverwrite = presets.hasOwnProperty(name);
+    const data = getPresetData();
 
-    // Create preset data
-    presets[name] = {
-        createdAt: isOverwrite ? presets[name].createdAt : Date.now(),
+    // Create folder if not exists
+    if (!data[folderName]) {
+        data[folderName] = {};
+    }
+
+    const isOverwrite = data[folderName].hasOwnProperty(presetName);
+
+    // Save Preset
+    data[folderName][presetName] = {
+        createdAt: isOverwrite ? data[folderName][presetName].createdAt : Date.now(),
         updatedAt: Date.now(),
         metronomes: metronomes.map(m => extractMetronomeState(m))
     };
 
-    if (savePresetsToStorage(presets)) {
-        showToast(isOverwrite ? `「${name}」を上書き保存しました` : `「${name}」を保存しました`, 'success');
+    if (savePresetData(data)) {
+        showToast(isOverwrite ? `「${folderName} / ${presetName}」を上書き保存しました` : `「${folderName} / ${presetName}」を保存しました`, 'success');
         presetNameInput.value = '';
+        if (saveFolderSelect.value === 'new') {
+            newFolderInput.value = '';
+        }
+
+        // Refresh UIs
+        refreshFolderSelects();
+
+        // Auto-select the saved one
+        folderSelect.value = folderName;
         refreshPresetSelect();
-        presetSelect.value = name;
+        presetSelect.value = presetName;
+        updatePresetButtonStates();
     } else {
         showToast('保存に失敗しました', 'error');
     }
 }
 
-// Load selected preset
+// LOAD Logic
 function loadPreset() {
-    const name = presetSelect.value;
+    const folderName = folderSelect.value;
+    const presetName = presetSelect.value;
 
-    if (!name) {
-        showToast('プリセットを選択してください', 'info');
+    if (!folderName || !presetName) {
+        showToast('読み込むプリセットを選択してください', 'info');
         return;
     }
 
-    const presets = getPresets();
-    const preset = presets[name];
+    const data = getPresetData();
+    const folder = data[folderName];
+    const preset = folder ? folder[presetName] : null;
 
     if (!preset) {
         showToast('プリセットが見つかりません', 'error');
@@ -892,84 +1027,67 @@ function loadPreset() {
         applyMetronomeState(m, state);
     });
 
-    showToast(`「${name}」を読み込みました`, 'success');
+    showToast(`「${presetName}」を読み込みました`, 'success');
 }
 
-// Delete selected preset
+// DELETE Logic
 function deletePreset() {
-    const name = presetSelect.value;
+    const folderName = folderSelect.value;
+    const presetName = presetSelect.value;
 
-    if (!name) {
-        showToast('削除するプリセットを選択してください', 'info');
+    if (!folderName || !presetName) {
         return;
     }
 
-    if (!confirm(`「${name}」を削除しますか？`)) {
+    if (!confirm(`フォルダ「${folderName}」のプリセット「${presetName}」を削除しますか？`)) {
         return;
     }
 
-    const presets = getPresets();
+    const data = getPresetData();
+    if (data[folderName] && data[folderName][presetName]) {
+        delete data[folderName][presetName];
 
-    if (presets.hasOwnProperty(name)) {
-        delete presets[name];
-
-        if (savePresetsToStorage(presets)) {
-            showToast(`「${name}」を削除しました`, 'success');
-            refreshPresetSelect();
-        } else {
-            showToast('削除に失敗しました', 'error');
+        // Optional: Remove empty folders?
+        // Let's keep them for now as per plan, unless explicitly empty.
+        // If user wants to delete folder, maybe we need a separate "Delete Folder" button?
+        // For now, if folder is empty, maybe we clean it up to keep it clean.
+        // Actually, let's keep it simple: If folder is empty, delete it.
+        if (Object.keys(data[folderName]).length === 0) {
+            delete data[folderName];
+            showToast(`フォルダ「${folderName}」も空になったため削除しました`, 'info');
         }
+
+        savePresetData(data);
+        showToast(`「${presetName}」を削除しました`, 'success');
+
+        refreshFolderSelects();
+        refreshPresetSelect();
     }
 }
 
-// Refresh preset select dropdown
-function refreshPresetSelect() {
-    const presets = getPresets();
-    const currentValue = presetSelect.value;
 
-    // Clear existing options except first
-    while (presetSelect.options.length > 1) {
-        presetSelect.remove(1);
-    }
-
-    // Add preset options sorted by name
-    const names = Object.keys(presets).sort((a, b) => a.localeCompare(b, 'ja'));
-
-    names.forEach(name => {
-        const option = document.createElement('option');
-        option.value = name;
-        option.textContent = name;
-        presetSelect.appendChild(option);
-    });
-
-    // Restore selection if still exists
-    if (names.includes(currentValue)) {
-        presetSelect.value = currentValue;
-    }
-
-    // Update button states
-    updatePresetButtonStates();
-}
-
-// Update button states based on selection
-function updatePresetButtonStates() {
-    const hasSelection = presetSelect.value !== '';
-    loadPresetBtn.disabled = !hasSelection;
-    deletePresetBtn.disabled = !hasSelection;
-}
-
-// Event Listeners for Preset Management
+// Event Listeners
 savePresetBtn.addEventListener('click', savePreset);
 loadPresetBtn.addEventListener('click', loadPreset);
 deletePresetBtn.addEventListener('click', deletePreset);
-presetSelect.addEventListener('change', updatePresetButtonStates);
 
-// Allow Enter key to save preset
-presetNameInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        savePreset();
-    }
+folderSelect.addEventListener('change', () => {
+    refreshPresetSelect();
 });
 
-// Initialize presets on load
-refreshPresetSelect();
+presetSelect.addEventListener('change', updatePresetButtonStates);
+
+saveFolderSelect.addEventListener('change', toggleNewFolderInput);
+
+// Enter key support
+presetNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') savePreset();
+});
+newFolderInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') savePreset();
+});
+
+
+// Initialize
+refreshFolderSelects();
+
