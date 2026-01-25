@@ -857,13 +857,13 @@ if (presetToggleBtn && presetSection && presetContentBody) {
 // ==========================================
 
 const firebaseConfig = {
-    // TODO: Replace with your Firebase project config
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyBBJtqrYVxhkKxL5-50l-wAAH4C4-D4B9k",
+    authDomain: "maltinome.firebaseapp.com",
+    projectId: "maltinome",
+    storageBucket: "maltinome.firebasestorage.app",
+    messagingSenderId: "311525727655",
+    appId: "1:311525727655:web:91b5857ddb3020b4042a82",
+    measurementId: "G-NDP49SSC9J"
 };
 
 // Initialize Firebase
