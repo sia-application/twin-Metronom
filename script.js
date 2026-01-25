@@ -59,6 +59,8 @@ const metronomeTemplate = document.getElementById('metronome-template');
 // Pattern Definitions
 const patterns = {
     'quarter': { beats: 4, subdivisions: 1, notes: [1, 1, 1, 1] },
+    'three-four': { beats: 3, subdivisions: 1, notes: [1, 1, 1] },
+
     'triplet': { beats: 3, subdivisions: 1, notes: [1, 1, 1] },
     'triplet-hollow': { beats: 3, subdivisions: 1, notes: [1, 0, 1] },
     'sextuplet': { beats: 6, subdivisions: 1, notes: [1, 1, 1, 1, 1, 1] }
@@ -381,7 +383,9 @@ function scheduleMetronomeNote(metronome, time) {
     // Durations
     let beatDuration = 60.0 / metronome.tempo; // Quarter
     if (metronome.currentPattern === 'sextuplet') beatDuration /= 6;
-    else if (metronome.currentPattern !== 'quarter') beatDuration /= 3; // Triplet variants
+
+    else if (metronome.currentPattern === 'triplet' || metronome.currentPattern === 'triplet-hollow') beatDuration /= 3; // Triplet variants
+    // three-four and quarter default to beatDuration (quarter note)
 
     const mainInterval = beatDuration / metronome.clickMultiplier;
     const offInterval = beatDuration / metronome.offbeatMultiplier;
@@ -424,7 +428,8 @@ function advanceMetronomeNote(metronome) {
     const pattern = patterns[metronome.currentPattern];
     let duration = 60.0 / metronome.tempo;
     if (metronome.currentPattern === 'sextuplet') duration /= 6;
-    else if (metronome.currentPattern !== 'quarter') duration /= 3;
+
+    else if (metronome.currentPattern === 'triplet' || metronome.currentPattern === 'triplet-hollow') duration /= 3;
 
     metronome.nextNoteTime += duration;
     metronome.currentBeat = (metronome.currentBeat + 1) % pattern.beats;

@@ -492,6 +492,10 @@ header h1 {
     position: relative;
 }
 
+.three-four-visual {
+    position: relative;
+}
+
 .quarter-visual::before {
     content: '4';
     position: absolute;
@@ -514,6 +518,16 @@ header h1 {
 
 .sextuplet-visual::before {
     content: '6';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--accent);
+}
+
+.three-four-visual::before {
+    content: '3/4';
     position: absolute;
     top: -14px;
     left: 50%;
