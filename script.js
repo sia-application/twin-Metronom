@@ -219,8 +219,8 @@ class Metronome {
         };
 
         volSlider.addEventListener('input', (e) => updateVol(e.target.value));
-        muteBtn.addEventListener('click', () => updateVol(Math.max(0, parseInt(volSlider.value) - 100)));
-        el.querySelector('.main-volume-up').addEventListener('click', () => updateVol(Math.min(500, parseInt(volSlider.value) + 100)));
+        muteBtn.addEventListener('click', () => updateVol(Math.max(0, parseInt(volSlider.value) - 10)));
+        el.querySelector('.main-volume-up').addEventListener('click', () => updateVol(Math.min(500, parseInt(volSlider.value) + 10)));
 
         // Offbeat Volume
         const offSlider = el.querySelector('.detail-settings .offbeat-volume-slider');
