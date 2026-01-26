@@ -86,6 +86,7 @@ class Metronome {
 
         // Rhythm Practice State
         this.practiceMode = 'main'; // main, offbeat, both
+        this.judgeMutedBeats = false; // Judge even if muted
         this.practiceMainVol = 1.0;
         this.practiceOffVol = 1.0;
         this.practiceMainPitch = 783.991;
@@ -881,6 +882,15 @@ class Metronome {
                     this.updateComboDisplay();
                 });
             }
+
+            // Judge Muted Toggle
+            const judgeMutedToggle = el.querySelector('.judge-muted-toggle');
+            if (judgeMutedToggle) {
+                judgeMutedToggle.addEventListener('click', () => {
+                    this.judgeMutedBeats = !this.judgeMutedBeats;
+                    judgeMutedToggle.classList.toggle('active', this.judgeMutedBeats);
+                });
+            }
         }
 
         // Initialize Main displays
@@ -1074,7 +1084,7 @@ class Metronome {
         this.element.querySelectorAll('.offbeat-dot').forEach(d => d.classList.remove('active'));
     }
 
-    addExpectedHit(time, type) {
+    addExpectedHit(time, type, isMuted = false) {
         // Keep only recent and future hits
         const now = audioContext ? audioContext.currentTime : 0;
 
@@ -1083,7 +1093,7 @@ class Metronome {
             this.expectedHits = this.expectedHits.filter(h => h.time > now - 1.0);
         }
 
-        this.expectedHits.push({ time, type, tapped: false });
+        this.expectedHits.push({ time, type, tapped: false, isMuted });
     }
 
     evaluateTap() {
@@ -1117,6 +1127,16 @@ class Metronome {
         if (closest) {
             closest.tapped = true; // Mark as processed
             closest.timedOut = false; // Consume the timeout flag
+
+            // Check if muted logic applies
+            if (closest.isMuted && !this.judgeMutedBeats) {
+                // User tapped a muted beat when judgment is OFF -> MISS (Anti-target)
+                // We fake a 'MISS' result
+                this.displayEvaluation(Infinity); // Infinity diff triggers MISS
+                return;
+            }
+
+            // Otherwise judge normally (if judgeMutedBeats=true, or if !isMuted)
             this.displayEvaluation(minDiff);
         }
     }
@@ -1250,13 +1270,17 @@ class Metronome {
 
             if (relevant) {
                 if (now - hit.time > 0.16) {
-                    // Missed!
-                    hit.tapped = true; // Mark as handled so we don't process it again
-                    hit.timedOut = true; // Mark as timed out so explicit late taps can claim it
+                    // Timeout
+                    hit.tapped = true;
+                    hit.timedOut = true;
 
-                    // Silent Miss - Do NOT reset combo, just clear evaluation text
+                    // If it was a muted beat AND we are NOT judging muted beats, then ignoring it is correct.
+                    // So DO NOTHING.
+                    if (hit.isMuted && !this.judgeMutedBeats) {
+                        return;
+                    }
 
-                    // Clear evaluation text
+                    // Otherwise, it was a legitimate MISS
                     const textEl = this.element.querySelector('.evaluation-text');
                     if (textEl) {
                         textEl.textContent = '---';
@@ -1265,7 +1289,8 @@ class Metronome {
 
                     // Reset Combo on miss
                     this.comboCount = 0;
-                    // this.updateComboDisplay(); // Keep the last combo visible
+                    if (this.evaluationCounts) this.evaluationCounts.miss++; // Count as miss
+                    this.updateCountDisplay();
                 }
             }
         });
@@ -1392,17 +1417,20 @@ function scheduleMetronomeNote(metronome, time) {
     const visualDuration = (mainInterval / 2) * 1000 * 0.6;
 
     // Record expected hits for practice
+    // Record expected hits for practice
     if (metronome.isPlaying) {
         // Main beat
-        if (!metronome.mutedBeats.has(beatNumber) && pattern.notes[beatNumber] !== 0) {
+        if (pattern.notes[beatNumber] !== 0) {
+            const isMuted = metronome.mutedBeats.has(beatNumber);
             for (let i = 0; i < metronome.clickMultiplier; i++) {
-                metronome.addExpectedHit(mainStart + i * mainInterval, 'main');
+                metronome.addExpectedHit(mainStart + i * mainInterval, 'main', isMuted);
             }
         }
         // Off beat
-        if (!metronome.mutedOffbeats.has(beatNumber) && pattern.notes[beatNumber] !== 0) {
+        if (pattern.notes[beatNumber] !== 0) {
+            const isMuted = metronome.mutedOffbeats.has(beatNumber);
             for (let i = 0; i < metronome.offbeatMultiplier; i++) {
-                metronome.addExpectedHit(offStart + i * offInterval, 'offbeat');
+                metronome.addExpectedHit(offStart + i * offInterval, 'offbeat', isMuted);
             }
         }
     }
