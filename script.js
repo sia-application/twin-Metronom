@@ -207,19 +207,26 @@ class Metronome {
 
         // Volume
         const volSlider = el.querySelector('.volume-slider');
-        const volDisplay = el.querySelector('.volume-display');
+        const volInput = el.querySelector('.main-volume-input');
         const muteBtn = el.querySelector('.main-mute-btn');
 
-        const updateVol = (val) => {
-            this.volume = parseInt(val) / 100;
-            volSlider.value = val;
-            volDisplay.textContent = val + '%';
+        const updateVol = (val, fromInput = false) => {
+            let v = parseInt(val);
+            if (isNaN(v)) v = 0;
+            v = Math.max(0, Math.min(500, v));
+            this.volume = v / 100;
+            volSlider.value = v;
+            if (!fromInput && volInput) volInput.value = v;
             muteBtn.textContent = this.volume === 0 ? '🔇' : '🔈';
             muteBtn.classList.toggle('muted', this.volume === 0);
         };
 
         volSlider.addEventListener('click', () => toggleStep(volSlider, false, 'volume', false));
         volSlider.addEventListener('input', (e) => updateVol(e.target.value));
+        if (volInput) {
+            volInput.addEventListener('input', (e) => updateVol(e.target.value, true));
+            volInput.addEventListener('blur', () => updateVol(volInput.value));
+        }
         muteBtn.addEventListener('click', () => {
             const step = this.volumeStep === 2 ? 100 : 10;
             updateVol(Math.max(0, parseInt(volSlider.value) - step));
@@ -231,19 +238,26 @@ class Metronome {
 
         // Offbeat Volume
         const offSlider = el.querySelector('.detail-settings .offbeat-volume-slider');
-        const offDisplay = el.querySelector('.offbeat-volume-display');
+        const offInput = el.querySelector('.offbeat-volume-input');
         const offMuteBtn = el.querySelector('.offbeat-mute-btn');
 
-        const updateOffVol = (val) => {
-            this.offbeatVolume = parseInt(val) / 100;
-            offSlider.value = val;
-            offDisplay.textContent = val + '%';
+        const updateOffVol = (val, fromInput = false) => {
+            let v = parseInt(val);
+            if (isNaN(v)) v = 0;
+            v = Math.max(0, Math.min(500, v));
+            this.offbeatVolume = v / 100;
+            offSlider.value = v;
+            if (!fromInput && offInput) offInput.value = v;
             offMuteBtn.textContent = this.offbeatVolume === 0 ? '🔇' : '🔈';
             offMuteBtn.classList.toggle('muted', this.offbeatVolume === 0);
         };
 
         offSlider.addEventListener('click', () => toggleStep(offSlider, true, 'volume', false));
         offSlider.addEventListener('input', (e) => updateOffVol(e.target.value));
+        if (offInput) {
+            offInput.addEventListener('input', (e) => updateOffVol(e.target.value, true));
+            offInput.addEventListener('blur', () => updateOffVol(offInput.value));
+        }
         offMuteBtn.addEventListener('click', () => {
             const step = this.offbeatVolumeStep === 2 ? 100 : 10;
             updateOffVol(Math.max(0, parseInt(offSlider.value) - step));
@@ -703,17 +717,24 @@ class Metronome {
 
             // Main Vol
             const pVolSlider = el.querySelector('.practice-volume-slider');
-            const pVolDisplay = el.querySelector('.practice-vol-display');
+            const pVolInput = el.querySelector('.practice-volume-input');
             const pMuteBtn = el.querySelector('.practice-mute-btn');
-            const updatePVol = (val) => {
-                this.practiceMainVol = parseInt(val) / 100;
-                pVolSlider.value = val;
-                pVolDisplay.textContent = val + '%';
+            const updatePVol = (val, fromInput = false) => {
+                let v = parseInt(val);
+                if (isNaN(v)) v = 0;
+                v = Math.max(0, Math.min(500, v));
+                this.practiceMainVol = v / 100;
+                pVolSlider.value = v;
+                if (!fromInput && pVolInput) pVolInput.value = v;
                 pMuteBtn.textContent = this.practiceMainVol === 0 ? '🔇' : '🔈';
                 pMuteBtn.classList.toggle('muted', this.practiceMainVol === 0);
             };
             pVolSlider.addEventListener('click', () => toggleStep(pVolSlider, false, 'volume', true));
             pVolSlider.addEventListener('input', (e) => updatePVol(e.target.value));
+            if (pVolInput) {
+                pVolInput.addEventListener('input', (e) => updatePVol(e.target.value, true));
+                pVolInput.addEventListener('blur', () => updatePVol(pVolInput.value));
+            }
             pMuteBtn.addEventListener('click', () => {
                 const step = this.practiceVolumeStep === 2 ? 100 : 10;
                 updatePVol(Math.max(0, parseInt(pVolSlider.value) - step));
@@ -725,17 +746,24 @@ class Metronome {
 
             // Offbeat Vol
             const pOffVolSlider = el.querySelector('.practice-off-volume-slider');
-            const pOffVolDisplay = el.querySelector('.practice-off-vol-display');
+            const pOffVolInput = el.querySelector('.practice-off-volume-input');
             const pOffMuteBtn = el.querySelector('.practice-off-mute-btn');
-            const updatePOffVol = (val) => {
-                this.practiceOffVol = parseInt(val) / 100;
-                pOffVolSlider.value = val;
-                pOffVolDisplay.textContent = val + '%';
+            const updatePOffVol = (val, fromInput = false) => {
+                let v = parseInt(val);
+                if (isNaN(v)) v = 0;
+                v = Math.max(0, Math.min(500, v));
+                this.practiceOffVol = v / 100;
+                pOffVolSlider.value = v;
+                if (!fromInput && pOffVolInput) pOffVolInput.value = v;
                 pOffMuteBtn.textContent = this.practiceOffVol === 0 ? '🔇' : '🔈';
                 pOffMuteBtn.classList.toggle('muted', this.practiceOffVol === 0);
             };
             pOffVolSlider.addEventListener('click', () => toggleStep(pOffVolSlider, true, 'volume', true));
             pOffVolSlider.addEventListener('input', (e) => updatePOffVol(e.target.value));
+            if (pOffVolInput) {
+                pOffVolInput.addEventListener('input', (e) => updatePOffVol(e.target.value, true));
+                pOffVolInput.addEventListener('blur', () => updatePOffVol(pOffVolInput.value));
+            }
             pOffMuteBtn.addEventListener('click', () => {
                 const step = this.practiceOffVolumeStep === 2 ? 100 : 10;
                 updatePOffVol(Math.max(0, parseInt(pOffVolSlider.value) - step));

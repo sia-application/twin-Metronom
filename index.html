@@ -162,7 +162,11 @@
                         <h2>TAP音量調整</h2>
                         <div class="volume-label">
                             <span> 表拍</span>
-                            <span class="practice-vol-display">100%</span>
+                            <div class="volume-input-group">
+                                <input type="number" class="volume-input practice-volume-input" value="100" min="0"
+                                    max="500">
+                                <span class="volume-unit">%</span>
+                            </div>
                         </div>
                         <div class="volume-control">
                             <button class="mute-btn practice-mute-btn" title="ミュート">🔈</button>
@@ -175,7 +179,11 @@
                     <div class="volume-section offbeat-volume">
                         <div class="volume-label">
                             <span> 裏拍</span>
-                            <span class="practice-off-vol-display">100%</span>
+                            <div class="volume-input-group">
+                                <input type="number" class="volume-input practice-off-volume-input" value="100" min="0"
+                                    max="500">
+                                <span class="volume-unit">%</span>
+                            </div>
                         </div>
                         <div class="volume-control">
                             <button class="mute-btn practice-off-mute-btn" title="ミュート">🔈</button>
@@ -300,7 +308,10 @@
                     <h2>音量調整</h2>
                     <div class="volume-label">
                         <span> 表拍</span>
-                        <span class="volume-display">100%</span>
+                        <div class="volume-input-group">
+                            <input type="number" class="volume-input main-volume-input" value="100" min="0" max="500">
+                            <span class="volume-unit">%</span>
+                        </div>
                     </div>
                     <div class="volume-control">
                         <button class="mute-btn main-mute-btn" title="-10%">🔈</button>
@@ -313,7 +324,10 @@
                 <div class="volume-section offbeat-volume">
                     <div class="volume-label">
                         <span> 裏拍</span>
-                        <span class="offbeat-volume-display">0%</span>
+                        <div class="volume-input-group">
+                            <input type="number" class="volume-input offbeat-volume-input" value="0" min="0" max="500">
+                            <span class="volume-unit">%</span>
+                        </div>
                     </div>
                     <div class="volume-control">
                         <button class="mute-btn muted offbeat-mute-btn" title="ミュート">🔇</button>

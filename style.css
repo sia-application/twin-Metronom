@@ -148,7 +148,9 @@ header h1 {
     outline: none;
     caret-color: var(--accent);
     font-family: 'Outfit', sans-serif;
+    -webkit-appearance: none;
     -moz-appearance: textfield;
+    appearance: none;
 }
 
 .tempo-input::-webkit-outer-spin-button,
@@ -253,10 +255,41 @@ header h1 {
 
 .volume-display,
 .practice-vol-display,
-.pitch-input {
+.pitch-input,
+.volume-input {
     font-size: 1rem;
     font-weight: 600;
     color: #1abc9c;
+}
+
+.volume-input-group {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+
+.volume-input {
+    background: transparent;
+    border: none;
+    width: 42px;
+    text-align: right;
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: none;
+}
+
+.volume-input::-webkit-outer-spin-button,
+.volume-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.volume-unit {
+    font-size: 0.9rem;
+    color: #1abc9c;
+    font-weight: 600;
 }
 
 .pitch-input {
