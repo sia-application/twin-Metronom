@@ -892,9 +892,9 @@ class Metronome {
                 // Initialize text
                 const updateJudgeText = (mode) => {
                     const map = {
-                        'off': '通常 (ミュート除外)',
-                        'all': '全て (ミュート含む)',
-                        'muted_only': 'ミュートのみ'
+                        'off': 'クリック',
+                        'all': 'クリック＆ミュート',
+                        'muted_only': 'ミュート'
                     };
                     judgeMutedValue.textContent = map[mode];
                 };
@@ -902,8 +902,8 @@ class Metronome {
 
                 judgeMutedToggle.addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (this.judgeMutedBeats === 'off') this.judgeMutedBeats = 'all';
-                    else if (this.judgeMutedBeats === 'all') this.judgeMutedBeats = 'muted_only';
+                    if (this.judgeMutedBeats === 'off') this.judgeMutedBeats = 'muted_only';
+                    else if (this.judgeMutedBeats === 'muted_only') this.judgeMutedBeats = 'all';
                     else this.judgeMutedBeats = 'off';
 
                     updateJudgeText(this.judgeMutedBeats);
