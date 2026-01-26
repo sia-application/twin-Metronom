@@ -1847,17 +1847,20 @@ header h1 {
 .rhythm-practice-settings {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: rgba(0, 0, 0, 0.2);
     border-radius: 16px;
-    margin-top: 8px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
 }
 
 .rhythm-practice-settings.open {
     max-height: 2000px;
-    /* Sufficient height */
     padding: 20px;
+    margin-top: 8px;
     margin-bottom: 24px;
+    opacity: 1;
 }
 
 .practice-display {
