@@ -81,13 +81,13 @@ body {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(231, 76, 60, 0.2);
-    color: #e74c3c;
+    background: var(--bg-glass);
+    color: var(--text-primary);
     border: none;
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -96,9 +96,9 @@ body {
 }
 
 .remove-btn:hover {
-    background: #e74c3c;
+    background: var(--primary);
     color: white;
-    transform: rotate(90deg);
+    transform: scale(1.1);
 }
 
 .add-btn {
