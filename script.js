@@ -1142,17 +1142,13 @@ class Metronome {
                     // Missed!
                     hit.tapped = true; // Mark as handled so we don't process it again
 
-                    // Silent Combo Reset
-                    if (this.comboCount > 0) {
-                        this.comboCount = 0;
-                        this.updateComboDisplay();
+                    // Silent Miss - Do NOT reset combo, just clear evaluation text
 
-                        // Clear evaluation text
-                        const textEl = this.element.querySelector('.evaluation-text');
-                        if (textEl) {
-                            textEl.textContent = '---';
-                            textEl.className = 'evaluation-text';
-                        }
+                    // Clear evaluation text
+                    const textEl = this.element.querySelector('.evaluation-text');
+                    if (textEl) {
+                        textEl.textContent = '---';
+                        textEl.className = 'evaluation-text';
                     }
                     // Optionally trigger a "miss" count increment silently?
                     // User request: "MISSなどの評価を出さない" (Don't show MISS evaluation)
