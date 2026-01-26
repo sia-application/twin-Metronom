@@ -1106,7 +1106,7 @@ class Metronome {
         const countEl = this.element.querySelector('.combo-count');
 
         if (comboEl && countEl) {
-            if (this.comboCount > 1) {
+            if (this.comboCount > 0) {
                 comboEl.classList.add('active');
                 countEl.textContent = this.comboCount;
 
@@ -1146,6 +1146,13 @@ class Metronome {
                     if (this.comboCount > 0) {
                         this.comboCount = 0;
                         this.updateComboDisplay();
+
+                        // Clear evaluation text
+                        const textEl = this.element.querySelector('.evaluation-text');
+                        if (textEl) {
+                            textEl.textContent = '---';
+                            textEl.className = 'evaluation-text';
+                        }
                     }
                     // Optionally trigger a "miss" count increment silently?
                     // User request: "MISSなどの評価を出さない" (Don't show MISS evaluation)
