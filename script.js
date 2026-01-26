@@ -1150,12 +1150,10 @@ class Metronome {
                         textEl.textContent = '---';
                         textEl.className = 'evaluation-text';
                     }
-                    // Optionally trigger a "miss" count increment silently?
-                    // User request: "MISSなどの評価を出さない" (Don't show MISS evaluation)
-                    // "コンボがリセットされる" (Combo resets)
-                    // We will NOT increment MISS count to avoid negative feedback visually, strictly following request.
-                    // If user wants to track misses in stats but not show big red text, that wasn't specified.
-                    // For now, only reset combo.
+
+                    // Reset Combo on miss
+                    this.comboCount = 0;
+                    // this.updateComboDisplay(); // Keep the last combo visible
                 }
             }
         });
