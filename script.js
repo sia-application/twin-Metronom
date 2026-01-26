@@ -307,6 +307,14 @@ class Metronome {
             }
         };
 
+        const getSemitoneStep = (currentFreq, step) => {
+            const noteNum = 12 * (Math.log(currentFreq / 440) / Math.log(2)) + 69;
+            const targetNote = Math.round(noteNum) + step;
+            const newFreq = 440 * Math.pow(2, (targetNote - 69) / 12);
+            // Return rounded to 3 decimals
+            return Math.round(newFreq * 1000) / 1000;
+        };
+
         // Tuning Fork Helper
         const handleTuningToggle = (freq, btn) => {
             // Ensure context is running
@@ -355,13 +363,15 @@ class Metronome {
                 }
             });
             el.querySelector('.pitch-down').addEventListener('click', () => {
-                updatePitch(this.pitch - 50);
+                const newFreq = getSemitoneStep(this.pitch, -1);
+                updatePitch(newFreq);
                 if (this.activeTuningForks.has(el.querySelector('.pitch-fork-btn'))) {
                     this.activeTuningForks.get(el.querySelector('.pitch-fork-btn')).osc.frequency.setValueAtTime(this.pitch, audioContext.currentTime);
                 }
             });
             el.querySelector('.pitch-up').addEventListener('click', () => {
-                updatePitch(this.pitch + 50);
+                const newFreq = getSemitoneStep(this.pitch, 1);
+                updatePitch(newFreq);
                 if (this.activeTuningForks.has(el.querySelector('.pitch-fork-btn'))) {
                     this.activeTuningForks.get(el.querySelector('.pitch-fork-btn')).osc.frequency.setValueAtTime(this.pitch, audioContext.currentTime);
                 }
@@ -417,14 +427,16 @@ class Metronome {
                 }
             });
             el.querySelector('.offbeat-pitch-down').addEventListener('click', () => {
-                updateOffbeatPitch(this.offbeatPitch - 50);
+                const newFreq = getSemitoneStep(this.offbeatPitch, -1);
+                updateOffbeatPitch(newFreq);
                 const btn = el.querySelector('.offbeat-fork-btn');
                 if (btn && this.activeTuningForks.has(btn)) {
                     this.activeTuningForks.get(btn).osc.frequency.setValueAtTime(this.offbeatPitch, audioContext.currentTime);
                 }
             });
             el.querySelector('.offbeat-pitch-up').addEventListener('click', () => {
-                updateOffbeatPitch(this.offbeatPitch + 50);
+                const newFreq = getSemitoneStep(this.offbeatPitch, 1);
+                updateOffbeatPitch(newFreq);
                 const btn = el.querySelector('.offbeat-fork-btn');
                 if (btn && this.activeTuningForks.has(btn)) {
                     this.activeTuningForks.get(btn).osc.frequency.setValueAtTime(this.offbeatPitch, audioContext.currentTime);
@@ -608,14 +620,16 @@ class Metronome {
                 }
             });
             el.querySelector('.practice-pitch-down').addEventListener('click', () => {
-                updatePPitch(this.practiceMainPitch - 50);
+                const newFreq = getSemitoneStep(this.practiceMainPitch, -1);
+                updatePPitch(newFreq);
                 const btn = el.querySelector('.practice-pitch-fork-btn');
                 if (btn && this.activeTuningForks.has(btn)) {
                     this.activeTuningForks.get(btn).osc.frequency.setValueAtTime(this.practiceMainPitch, audioContext.currentTime);
                 }
             });
             el.querySelector('.practice-pitch-up').addEventListener('click', () => {
-                updatePPitch(this.practiceMainPitch + 50);
+                const newFreq = getSemitoneStep(this.practiceMainPitch, 1);
+                updatePPitch(newFreq);
                 const btn = el.querySelector('.practice-pitch-fork-btn');
                 if (btn && this.activeTuningForks.has(btn)) {
                     this.activeTuningForks.get(btn).osc.frequency.setValueAtTime(this.practiceMainPitch, audioContext.currentTime);
@@ -668,14 +682,16 @@ class Metronome {
                 }
             });
             el.querySelector('.practice-off-pitch-down').addEventListener('click', () => {
-                updatePOffPitch(this.practiceOffPitch - 50);
+                const newFreq = getSemitoneStep(this.practiceOffPitch, -1);
+                updatePOffPitch(newFreq);
                 const btn = el.querySelector('.practice-off-fork-btn');
                 if (btn && this.activeTuningForks.has(btn)) {
                     this.activeTuningForks.get(btn).osc.frequency.setValueAtTime(this.practiceOffPitch, audioContext.currentTime);
                 }
             });
             el.querySelector('.practice-off-pitch-up').addEventListener('click', () => {
-                updatePOffPitch(this.practiceOffPitch + 50);
+                const newFreq = getSemitoneStep(this.practiceOffPitch, 1);
+                updatePOffPitch(newFreq);
                 const btn = el.querySelector('.practice-off-fork-btn');
                 if (btn && this.activeTuningForks.has(btn)) {
                     this.activeTuningForks.get(btn).osc.frequency.setValueAtTime(this.practiceOffPitch, audioContext.currentTime);
