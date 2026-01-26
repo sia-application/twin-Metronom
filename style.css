@@ -2231,6 +2231,31 @@ header h1 {
     .combo-count {
         font-size: 1.5rem;
     }
+
+    .volume-label {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .pitch-control-group {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .pitch-note-display-inline {
+        white-space: nowrap;
+        font-size: 0.9rem;
+    }
+
+    .volume-input-group {
+        justify-content: flex-end;
+    }
+
+    .pitch-input,
+    .volume-input {
+        font-size: 0.9rem;
+    }
 }
 
 .combo-settings-section {
