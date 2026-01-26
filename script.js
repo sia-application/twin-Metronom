@@ -352,6 +352,16 @@ class Metronome {
             // Use touchstart for lower latency on mobile, mousedown for desktop
             const handleTap = (e) => {
                 e.preventDefault(); // Prevent double firing
+
+                // Play sound
+                if (audioContext) {
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                    // Use a distinct "tap" sound (e.g., somewhat high pitched click)
+                    playTone(audioContext.currentTime, 1200, 1.0, 'triangle');
+                }
+
                 this.evaluateTap();
                 // Visual feedback
                 practiceTap.style.transform = 'scale(0.95)';
