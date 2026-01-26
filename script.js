@@ -1294,11 +1294,11 @@ class Metronome {
                     hit.tapped = true;
                     hit.timedOut = true;
 
-                    // If it was a muted beat AND we are NOT judging muted beats, then ignoring it is correct.
-                    // So DO NOTHING.
-                    if (hit.isMuted && !this.judgeMutedBeats) {
-                        return;
-                    }
+                    // Determine if this hit is a target based on mode
+                    const isTarget = (hit.isMuted && (this.judgeMutedBeats === 'all' || this.judgeMutedBeats === 'muted_only')) ||
+                        (!hit.isMuted && (this.judgeMutedBeats === 'off' || this.judgeMutedBeats === 'all'));
+
+                    if (!isTarget) return;
 
                     // Otherwise, it was a legitimate MISS
                     const textEl = this.element.querySelector('.evaluation-text');
