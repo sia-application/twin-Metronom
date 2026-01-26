@@ -107,7 +107,7 @@ class Metronome {
             miss: 0
         };
         this.comboCount = 0;
-        this.comboMode = 'all'; // all, exc_great, exc_only, off
+        this.comboMode = 'exc_great'; // all, exc_great, exc_only, off
 
         this.element = this.createUI();
         this.setupEventListeners();
