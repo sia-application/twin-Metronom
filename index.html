@@ -189,11 +189,11 @@
                                 <span> 表拍</span>
                                 <button class="tuning-fork-btn practice-pitch-fork-btn" title="再生/停止">♪</button>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="pitch-control-group">
                                 <input type="number" class="pitch-input practice-pitch-input" value="783.991" min="20"
                                     max="5000" step="0.001">
-                                <span>Hz</span>
-                                <span class="practice-pitch-note-display"></span>
+                                <span class="pitch-unit">Hz</span>
+                                <span class="practice-pitch-note-display pitch-note-display-inline"></span>
                             </div>
                         </div>
                         <div class="volume-control">
@@ -204,18 +204,17 @@
                         </div>
                     </div>
 
-                    <!-- Tap Pitch (Offbeat) -->
                     <div class="volume-section offbeat-pitch-section">
                         <div class="volume-label">
                             <div style="display: flex; align-items: center; gap: 8px;">
                                 <span> 裏拍</span>
                                 <button class="tuning-fork-btn practice-off-fork-btn" title="再生/停止">♪</button>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="pitch-control-group">
                                 <input type="number" class="pitch-input practice-off-pitch-input" value="587.330"
                                     min="20" max="5000" step="0.001">
-                                <span>Hz</span>
-                                <span class="practice-off-pitch-note-display"></span>
+                                <span class="pitch-unit">Hz</span>
+                                <span class="practice-off-pitch-note-display pitch-note-display-inline"></span>
                             </div>
                         </div>
                         <div class="volume-control">
@@ -302,7 +301,6 @@
                     </div>
                 </div>
 
-                <!-- Pitch Control -->
                 <div class="volume-section pitch-section">
                     <h2>ピッチ調整(Hz)</h2>
                     <div class="volume-label">
@@ -310,11 +308,11 @@
                             <span> 表拍</span>
                             <button class="tuning-fork-btn pitch-fork-btn" title="再生/停止">♪</button>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="pitch-control-group">
                             <input type="number" class="pitch-input main-pitch-input" value="783.991" min="20"
                                 max="5000" step="0.001">
-                            <span>Hz</span>
-                            <span class="pitch-note-display"></span>
+                            <span class="pitch-unit">Hz</span>
+                            <span class="pitch-note-display pitch-note-display-inline"></span>
                         </div>
                     </div>
                     <div class="volume-control">
@@ -324,18 +322,17 @@
                     </div>
                 </div>
 
-                <!-- Offbeat Pitch Control -->
                 <div class="volume-section offbeat-pitch-section">
                     <div class="volume-label">
                         <div style="display: flex; align-items: center; gap: 8px;">
                             <span> 裏拍</span>
                             <button class="tuning-fork-btn offbeat-fork-btn" title="再生/停止">♪</button>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="pitch-control-group">
                             <input type="number" class="pitch-input offbeat-pitch-input" value="587.330" min="20"
                                 max="5000" step="0.001">
-                            <span>Hz</span>
-                            <span class="offbeat-pitch-note-display"></span>
+                            <span class="pitch-unit">Hz</span>
+                            <span class="offbeat-pitch-note-display pitch-note-display-inline"></span>
                         </div>
                     </div>
                     <div class="volume-control">

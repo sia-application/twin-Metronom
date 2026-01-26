@@ -251,10 +251,27 @@ header h1 {
 }
 
 .volume-display,
-.practice-vol-display {
+.practice-vol-display,
+.pitch-input {
     font-size: 1rem;
     font-weight: 600;
     color: #1abc9c;
+}
+
+.pitch-input {
+    background: transparent;
+    border: none;
+    width: 65px;
+    text-align: right;
+    outline: none;
+    font-family: inherit;
+    -moz-appearance: textfield;
+}
+
+.pitch-input::-webkit-outer-spin-button,
+.pitch-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .volume-control {
@@ -2048,58 +2065,48 @@ header h1 {
 
 /* Tuning Fork Button */
 .tuning-fork-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    border: none;
     background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-primary);
-    font-size: 1.2rem;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    /* margin-left: 8px; Removed as it's now in label row with flex gap */
+    transition: all 0.2s;
+    font-size: 0.9rem;
 }
 
 .tuning-fork-btn:hover {
-    background: #0984e3;
-    /* Different color for distinction, maybe blue */
+    background: var(--primary);
+    transform: scale(1.1);
     color: white;
 }
 
 .tuning-fork-btn.active {
-    background: #0984e3;
+    background: var(--accent);
     color: white;
-    box-shadow: 0 0 10px rgba(9, 132, 227, 0.5);
+    box-shadow: 0 0 10px rgba(253, 121, 168, 0.4);
     animation: pulse 1s infinite;
 }
 
-/* Pitch Input */
-.pitch-input {
-    width: 80px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-    color: var(--text-primary);
-    padding: 4px 8px;
+.pitch-control-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.pitch-unit {
     font-size: 1rem;
-    font-family: inherit;
-    text-align: right;
-    -moz-appearance: textfield;
-    /* Remove arrows Firefox */
-    appearance: textfield;
+    font-weight: 600;
+    color: #1abc9c;
 }
 
-.pitch-input::-webkit-outer-spin-button,
-.pitch-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.pitch-input:focus {
-    outline: none;
-    border-color: #0984e3;
-    background: rgba(255, 255, 255, 0.2);
+.pitch-note-display-inline {
+    font-size: 1rem;
+    color: #1abc9c;
+    font-weight: 600;
+    min-width: 50px;
 }
