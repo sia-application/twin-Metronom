@@ -86,6 +86,11 @@ class Metronome {
 
         // Rhythm Practice State
         this.practiceMode = 'main'; // main, offbeat, both
+        this.practiceMainVol = 1.0;
+        this.practiceOffVol = 1.0;
+        this.practiceMainPitch = 800;
+        this.practiceOffPitch = 600;
+
         this.expectedHits = [];
         this.evaluationCounts = {
             excellent: 0,
@@ -208,7 +213,7 @@ class Metronome {
         el.querySelector('.main-volume-up').addEventListener('click', () => updateVol(Math.min(500, parseInt(volSlider.value) + 100)));
 
         // Offbeat Volume
-        const offSlider = el.querySelector('.offbeat-volume-slider');
+        const offSlider = el.querySelector('.detail-settings .offbeat-volume-slider');
         const offDisplay = el.querySelector('.offbeat-volume-display');
         const offMuteBtn = el.querySelector('.offbeat-mute-btn');
 
@@ -244,7 +249,7 @@ class Metronome {
         });
 
         // Pitch Control
-        const pitchSlider = el.querySelector('.pitch-slider');
+        const pitchSlider = el.querySelector('.detail-settings .pitch-slider');
         const pitchDisplay = el.querySelector('.pitch-display');
 
         const updatePitch = (val) => {
@@ -262,7 +267,7 @@ class Metronome {
         }
 
         // Offbeat Pitch Control
-        const offPitchSlider = el.querySelector('.offbeat-pitch-slider');
+        const offPitchSlider = el.querySelector('.detail-settings .offbeat-pitch-slider');
         const offPitchDisplay = el.querySelector('.offbeat-pitch-display');
 
         const updateOffbeatPitch = (val) => {
@@ -367,18 +372,117 @@ class Metronome {
             });
         }
 
+        // Practice Settings Toggle & Controls
+        const pracDetailToggle = el.querySelector('.practice-detail-toggle');
+        const pracDetailSettings = el.querySelector('.practice-detail-settings');
+
+        if (pracDetailToggle && pracDetailSettings) {
+            pracDetailToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                pracDetailSettings.classList.toggle('open');
+                const isOpen = pracDetailSettings.classList.contains('open');
+                pracDetailToggle.textContent = isOpen ? '設定 ▲' : '設定 ▼';
+            });
+
+            // Main Vol
+            const pVolSlider = el.querySelector('.practice-volume-slider');
+            const pVolDisplay = el.querySelector('.practice-vol-display');
+            const pMuteBtn = el.querySelector('.practice-mute-btn');
+            const updatePVol = (val) => {
+                this.practiceMainVol = parseInt(val) / 100;
+                pVolSlider.value = val;
+                pVolDisplay.textContent = val + '%';
+                pMuteBtn.textContent = this.practiceMainVol === 0 ? '🔇' : '🔈';
+                pMuteBtn.classList.toggle('muted', this.practiceMainVol === 0);
+            };
+            pVolSlider.addEventListener('input', (e) => updatePVol(e.target.value));
+            pMuteBtn.addEventListener('click', () => updatePVol(Math.max(0, parseInt(pVolSlider.value) - 10)));
+            el.querySelector('.practice-volume-up').addEventListener('click', () => updatePVol(Math.min(500, parseInt(pVolSlider.value) + 10)));
+
+            // Offbeat Vol
+            const pOffVolSlider = el.querySelector('.practice-off-volume-slider');
+            const pOffVolDisplay = el.querySelector('.practice-off-vol-display');
+            const pOffMuteBtn = el.querySelector('.practice-off-mute-btn');
+            const updatePOffVol = (val) => {
+                this.practiceOffVol = parseInt(val) / 100;
+                pOffVolSlider.value = val;
+                pOffVolDisplay.textContent = val + '%';
+                pOffMuteBtn.textContent = this.practiceOffVol === 0 ? '🔇' : '🔈';
+                pOffMuteBtn.classList.toggle('muted', this.practiceOffVol === 0);
+            };
+            pOffVolSlider.addEventListener('input', (e) => updatePOffVol(e.target.value));
+            pOffMuteBtn.addEventListener('click', () => updatePOffVol(Math.max(0, parseInt(pOffVolSlider.value) - 10)));
+            el.querySelector('.practice-off-volume-up').addEventListener('click', () => updatePOffVol(Math.min(500, parseInt(pOffVolSlider.value) + 10)));
+
+            // Main Pitch
+            const pPitchSlider = el.querySelector('.practice-pitch-slider');
+            const pPitchDisplay = el.querySelector('.practice-pitch-display');
+            const updatePPitch = (val) => {
+                let v = parseInt(val);
+                v = Math.max(200, Math.min(2000, v));
+                this.practiceMainPitch = v;
+                pPitchSlider.value = v;
+                pPitchDisplay.textContent = v + 'Hz';
+            };
+            pPitchSlider.addEventListener('input', (e) => updatePPitch(e.target.value));
+            el.querySelector('.practice-pitch-down').addEventListener('click', () => updatePPitch(this.practiceMainPitch - 50));
+            el.querySelector('.practice-pitch-up').addEventListener('click', () => updatePPitch(this.practiceMainPitch + 50));
+
+            // Offbeat Pitch
+            const pOffPitchSlider = el.querySelector('.practice-off-pitch-slider');
+            const pOffPitchDisplay = el.querySelector('.practice-off-pitch-display');
+            const updatePOffPitch = (val) => {
+                let v = parseInt(val);
+                v = Math.max(200, Math.min(2000, v));
+                this.practiceOffPitch = v;
+                pOffPitchSlider.value = v;
+                pOffPitchDisplay.textContent = v + 'Hz';
+            };
+            pOffPitchSlider.addEventListener('input', (e) => updatePOffPitch(e.target.value));
+            el.querySelector('.practice-off-pitch-down').addEventListener('click', () => updatePOffPitch(this.practiceOffPitch - 50));
+            el.querySelector('.practice-off-pitch-up').addEventListener('click', () => updatePOffPitch(this.practiceOffPitch + 50));
+        }
+
         if (practiceTap) {
             // Use touchstart for lower latency on mobile, mousedown for desktop
             const handleTap = (e) => {
                 e.preventDefault(); // Prevent double firing
+
+                // Determine sound settings based on mode/hit
+                let pitch = this.practiceMainPitch;
+                let vol = this.practiceMainVol;
+
+                if (this.practiceMode === 'offbeat') {
+                    pitch = this.practiceOffPitch;
+                    vol = this.practiceOffVol;
+                } else if (this.practiceMode === 'both') {
+                    // Try to guess closest beat type if possible
+                    if (audioContext && this.expectedHits.length > 0) {
+                        const now = audioContext.currentTime;
+                        let closest = null;
+                        let minDiff = Infinity;
+                        this.expectedHits.forEach(hit => {
+                            const diff = Math.abs(hit.time - now);
+                            if (diff < minDiff) {
+                                minDiff = diff;
+                                closest = hit;
+                            }
+                        });
+                        if (closest && closest.type === 'offbeat') {
+                            pitch = this.practiceOffPitch;
+                            vol = this.practiceOffVol;
+                        }
+                    }
+                }
 
                 // Play sound
                 if (audioContext) {
                     if (audioContext.state === 'suspended') {
                         audioContext.resume();
                     }
-                    // Use a distinct "tap" sound (e.g., somewhat high pitched click)
-                    playTone(audioContext.currentTime, 1200, 1.0, 'triangle');
+                    if (vol > 0) {
+                        playTone(audioContext.currentTime, pitch, vol, 'square');
+                    }
                 }
 
                 this.evaluateTap();

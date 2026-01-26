@@ -250,7 +250,8 @@ header h1 {
     color: var(--text-secondary);
 }
 
-.volume-display {
+.volume-display,
+.practice-vol-display {
     font-size: 1rem;
     font-weight: 600;
     color: #1abc9c;
@@ -268,18 +269,24 @@ header h1 {
 }
 
 .mute-btn {
-    font-size: 1.2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
+    border: none;
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0.7;
 }
 
 .mute-btn:hover {
-    background: var(--bg-glass);
+    background: #1abc9c;
+    color: white;
     opacity: 1;
 }
 
@@ -289,18 +296,24 @@ header h1 {
 }
 
 .volume-up-btn {
-    font-size: 1.2rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
+    width: 32px;
+    height: 32px;
     border-radius: 8px;
+    border: none;
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0.7;
 }
 
 .volume-up-btn:hover {
-    background: var(--bg-glass);
+    background: #1abc9c;
+    color: white;
     opacity: 1;
     transform: scale(1.1);
 }
@@ -311,7 +324,8 @@ header h1 {
 
 
 
-.volume-slider {
+.volume-slider,
+.practice-volume-slider {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
@@ -321,7 +335,8 @@ header h1 {
     outline: none;
 }
 
-.volume-slider::-webkit-slider-thumb {
+.volume-slider::-webkit-slider-thumb,
+.practice-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -333,20 +348,24 @@ header h1 {
     transition: transform 0.2s ease;
 }
 
-.volume-slider::-webkit-slider-thumb:hover {
+.volume-slider::-webkit-slider-thumb:hover,
+.practice-volume-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
 }
 
 /* Offbeat Volume Slider */
-.offbeat-volume .offbeat-volume-slider {
+.offbeat-volume .offbeat-volume-slider,
+.offbeat-volume .practice-off-volume-slider {
     background: linear-gradient(90deg, #1abc9c, #16a085);
 }
 
-.offbeat-volume .offbeat-volume-display {
+.offbeat-volume .offbeat-volume-display,
+.offbeat-volume .practice-off-vol-display {
     color: #1abc9c;
 }
 
-.offbeat-volume-slider {
+.offbeat-volume-slider,
+.practice-off-volume-slider {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
@@ -356,7 +375,8 @@ header h1 {
     outline: none;
 }
 
-.offbeat-volume-slider::-webkit-slider-thumb {
+.offbeat-volume-slider::-webkit-slider-thumb,
+.practice-off-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -368,24 +388,31 @@ header h1 {
     transition: transform 0.2s ease;
 }
 
-.offbeat-volume-slider::-webkit-slider-thumb:hover {
+.offbeat-volume-slider::-webkit-slider-thumb:hover,
+.practice-off-volume-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
 }
 
 /* Pitch Control Section */
 .pitch-section .pitch-slider,
-.offbeat-pitch-section .offbeat-pitch-slider {
+.offbeat-pitch-section .offbeat-pitch-slider,
+.pitch-section .practice-pitch-slider,
+.offbeat-pitch-section .practice-off-pitch-slider {
     background: linear-gradient(90deg, #1abc9c, #16a085);
 }
 
 .pitch-section .pitch-display,
-.offbeat-pitch-section .offbeat-pitch-display {
+.offbeat-pitch-section .offbeat-pitch-display,
+.pitch-section .practice-pitch-display,
+.offbeat-pitch-section .practice-off-pitch-display {
     color: #1abc9c;
     font-weight: 600;
 }
 
 .pitch-slider,
-.offbeat-pitch-slider {
+.offbeat-pitch-slider,
+.practice-pitch-slider,
+.practice-off-pitch-slider {
     flex: 1;
     height: 8px;
     -webkit-appearance: none;
@@ -396,7 +423,9 @@ header h1 {
 }
 
 .pitch-slider::-webkit-slider-thumb,
-.offbeat-pitch-slider::-webkit-slider-thumb {
+.offbeat-pitch-slider::-webkit-slider-thumb,
+.practice-pitch-slider::-webkit-slider-thumb,
+.practice-off-pitch-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 24px;
@@ -409,7 +438,9 @@ header h1 {
 }
 
 .pitch-slider::-webkit-slider-thumb:hover,
-.offbeat-pitch-slider::-webkit-slider-thumb:hover {
+.offbeat-pitch-slider::-webkit-slider-thumb:hover,
+.practice-pitch-slider::-webkit-slider-thumb:hover,
+.practice-off-pitch-slider::-webkit-slider-thumb:hover {
     transform: scale(1.2);
 }
 
@@ -1806,7 +1837,7 @@ header h1 {
 }
 
 .rhythm-practice-settings.open {
-    max-height: 800px;
+    max-height: 2000px;
     /* Sufficient height */
     padding: 20px;
     margin-bottom: 24px;
@@ -1932,6 +1963,7 @@ header h1 {
     align-items: center;
     justify-content: center;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    margin-bottom: 30px;
 }
 
 .practice-tap-area:active {
@@ -1979,6 +2011,25 @@ header h1 {
 .count-item.great .count-label,
 .count-item.great .count-value {
     color: #74b9ff;
+}
+
+.practice-detail-settings {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+    /* background: rgba(0, 0, 0, 0.2); Removed to fix mobile layout */
+    /* border-radius: 16px; Removed */
+    /* padding: 0 16px; Removed */
+    margin-top: 0;
+    /* Reset margin when closed */
+}
+
+.practice-detail-settings.open {
+    max-height: 1000px;
+    opacity: 1;
+    /* padding: 16px; Removed */
+    margin-top: 10px;
 }
 
 .count-item.nice .count-label,

@@ -150,6 +150,64 @@
                     <button class="evaluation-reset-btn">リセット</button>
                 </div>
                 <button class="practice-tap-area">TAP</button>
+
+                <button type="button" class="detail-toggle practice-detail-toggle">設定 ▼</button>
+                <div class="practice-detail-settings">
+                    <!-- Tap Volume (Main) -->
+                    <div class="volume-section">
+                        <div class="volume-label">
+                            <span> TAP音量(表)</span>
+                            <span class="practice-vol-display">100%</span>
+                        </div>
+                        <div class="volume-control">
+                            <button class="mute-btn practice-mute-btn" title="ミュート">🔈</button>
+                            <input type="range" class="practice-volume-slider" min="0" max="500" value="100">
+                            <button class="volume-up-btn practice-volume-up" title="+10%">🔊</button>
+                        </div>
+                    </div>
+
+                    <!-- Tap Volume (Offbeat) -->
+                    <div class="volume-section offbeat-volume">
+                        <div class="volume-label">
+                            <span> TAP音量(裏)</span>
+                            <span class="practice-off-vol-display">100%</span>
+                        </div>
+                        <div class="volume-control">
+                            <button class="mute-btn practice-off-mute-btn" title="ミュート">🔈</button>
+                            <input type="range" class="practice-off-volume-slider offbeat-volume-slider" min="0"
+                                max="500" value="100">
+                            <button class="volume-up-btn practice-off-volume-up" title="+10%">🔊</button>
+                        </div>
+                    </div>
+
+                    <!-- Tap Pitch (Main) -->
+                    <div class="volume-section pitch-section">
+                        <div class="volume-label">
+                            <span> TAPピッチ(表)</span>
+                            <span class="practice-pitch-display">800Hz</span>
+                        </div>
+                        <div class="volume-control">
+                            <button class="pitch-btn practice-pitch-down" title="-50Hz">−</button>
+                            <input type="range" class="practice-pitch-slider pitch-slider" min="200" max="2000"
+                                value="800" step="50">
+                            <button class="pitch-btn practice-pitch-up" title="+50Hz">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Tap Pitch (Offbeat) -->
+                    <div class="volume-section offbeat-pitch-section">
+                        <div class="volume-label">
+                            <span> TAPピッチ(裏)</span>
+                            <span class="practice-off-pitch-display">600Hz</span>
+                        </div>
+                        <div class="volume-control">
+                            <button class="pitch-btn practice-off-pitch-down" title="-50Hz">−</button>
+                            <input type="range" class="practice-off-pitch-slider offbeat-pitch-slider" min="200"
+                                max="2000" value="600" step="50">
+                            <button class="pitch-btn practice-off-pitch-up" title="+50Hz">+</button>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <button type="button" class="detail-toggle main-detail-toggle">詳細設定 ▼</button>
@@ -228,9 +286,9 @@
 
                 <!-- Pitch Control -->
                 <div class="volume-section pitch-section">
-                    <h2>ピッチ調整</h2>
+                    <h2>ピッチ調整(Hz)</h2>
                     <div class="volume-label">
-                        <span> ピッチ(Hz)</span>
+                        <span> 表拍</span>
                         <span class="pitch-display">800Hz</span>
                     </div>
                     <div class="volume-control">
@@ -243,7 +301,7 @@
                 <!-- Offbeat Pitch Control -->
                 <div class="volume-section offbeat-pitch-section">
                     <div class="volume-label">
-                        <span> 裏拍ピッチ(Hz)</span>
+                        <span> 裏拍</span>
                         <span class="offbeat-pitch-display">600Hz</span>
                     </div>
                     <div class="volume-control">
