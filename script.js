@@ -86,7 +86,7 @@ class Metronome {
 
         // Rhythm Practice State
         this.practiceMode = 'main'; // main, offbeat, both
-        this.judgeMutedBeats = false; // Judge even if muted
+        this.judgeMutedBeats = 'off'; // 'off', 'all', 'muted_only'
         this.practiceMainVol = 1.0;
         this.practiceOffVol = 1.0;
         this.practiceMainPitch = 783.991;
@@ -884,11 +884,29 @@ class Metronome {
             }
 
             // Judge Muted Toggle
-            const judgeMutedToggle = el.querySelector('.judge-muted-toggle');
-            if (judgeMutedToggle) {
-                judgeMutedToggle.addEventListener('click', () => {
-                    this.judgeMutedBeats = !this.judgeMutedBeats;
-                    judgeMutedToggle.classList.toggle('active', this.judgeMutedBeats);
+            // Judge Muted Toggle (3-way cycle)
+            const judgeMutedToggle = el.querySelector('#judge-muted-mode-toggle');
+            const judgeMutedValue = judgeMutedToggle ? judgeMutedToggle.querySelector('.visual-mode-value') : null;
+
+            if (judgeMutedToggle && judgeMutedValue) {
+                // Initialize text
+                const updateJudgeText = (mode) => {
+                    const map = {
+                        'off': '通常 (ミュート除外)',
+                        'all': '全て (ミュート含む)',
+                        'muted_only': 'ミュートのみ'
+                    };
+                    judgeMutedValue.textContent = map[mode];
+                };
+                updateJudgeText(this.judgeMutedBeats);
+
+                judgeMutedToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    if (this.judgeMutedBeats === 'off') this.judgeMutedBeats = 'all';
+                    else if (this.judgeMutedBeats === 'all') this.judgeMutedBeats = 'muted_only';
+                    else this.judgeMutedBeats = 'off';
+
+                    updateJudgeText(this.judgeMutedBeats);
                 });
             }
         }
@@ -1128,15 +1146,17 @@ class Metronome {
             closest.tapped = true; // Mark as processed
             closest.timedOut = false; // Consume the timeout flag
 
-            // Check if muted logic applies
-            if (closest.isMuted && !this.judgeMutedBeats) {
-                // User tapped a muted beat when judgment is OFF -> MISS (Anti-target)
-                // We fake a 'MISS' result
-                this.displayEvaluation(Infinity); // Infinity diff triggers MISS
+            // Determine validity based on mode
+            const isTarget = (closest.isMuted && (this.judgeMutedBeats === 'all' || this.judgeMutedBeats === 'muted_only')) ||
+                (!closest.isMuted && (this.judgeMutedBeats === 'off' || this.judgeMutedBeats === 'all'));
+
+            if (!isTarget) {
+                // Tapped an Anti-Target -> MISS
+                this.displayEvaluation(Infinity);
                 return;
             }
 
-            // Otherwise judge normally (if judgeMutedBeats=true, or if !isMuted)
+            // Valid target
             this.displayEvaluation(minDiff);
         }
     }

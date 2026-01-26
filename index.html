@@ -238,12 +238,10 @@
 
                     <div class="volume-section judge-muted-setting"
                         style="display: flex; justify-content: center; margin-top: 16px;">
-                        <button class="accent-toggle judge-muted-toggle"
-                            style="width: auto; height: auto; padding: 10px 20px;">
-                            <span class="accent-label" style="margin-right: 12px; font-weight: 600;">ミュート時も判定</span>
-                            <div class="accent-switch">
-                                <div class="accent-slider"></div>
-                            </div>
+                        <button type="button" class="visual-mode-toggle" id="judge-muted-mode-toggle"
+                            style="width: auto; min-width: 200px;">
+                            <span class="visual-mode-label" style="display:none">判定対象</span>
+                            <span class="visual-mode-value">通常 (ミュート除外)</span>
                         </button>
                     </div>
                 </div>
