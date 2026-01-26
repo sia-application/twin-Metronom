@@ -1309,7 +1309,7 @@ class Metronome {
 
                     // Reset Combo on miss
                     this.comboCount = 0;
-                    if (this.evaluationCounts) this.evaluationCounts.miss++; // Count as miss
+                    // if (this.evaluationCounts) this.evaluationCounts.miss++; // Count as miss (Disabled per user request)
                     this.updateCountDisplay();
                 }
             }
