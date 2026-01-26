@@ -2075,3 +2075,31 @@ header h1 {
     box-shadow: 0 0 10px rgba(9, 132, 227, 0.5);
     animation: pulse 1s infinite;
 }
+
+/* Pitch Input */
+.pitch-input {
+    width: 80px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+    color: var(--text-primary);
+    padding: 4px 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    text-align: right;
+    -moz-appearance: textfield;
+    /* Remove arrows Firefox */
+    appearance: textfield;
+}
+
+.pitch-input::-webkit-outer-spin-button,
+.pitch-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.pitch-input:focus {
+    outline: none;
+    border-color: #0984e3;
+    background: rgba(255, 255, 255, 0.2);
+}
