@@ -1440,16 +1440,44 @@ header h1 {
 
 
 /* Visual Mode Toggle */
-.visual-mode-section {
-    margin-bottom: 24px;
+/* Unified Detail Control Section */
+.detail-control-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 12px;
+    margin-bottom: 24px;
+    width: 100%;
+}
+
+.detail-control-section h2 {
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Visual Mode Toggle moved to be generic if needed, keeping specific for compat */
+.visual-mode-section {
+    /* Legacy/Specific overrides if any, otherwise map to detail-control-section in HTML */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
 .visual-mode-section h2 {
-    display: none;
+    text-align: center;
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    /* display: none; Removed */
 }
 
 .visual-mode-toggle {
